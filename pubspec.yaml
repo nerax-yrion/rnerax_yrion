@@ -11,12 +11,16 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
+  
+  # Packages premium pour la connexion sécurisée au serveur Render
+  http: ^1.2.0
+  flutter_secure_storage: ^9.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  # Le package magique pour générer les icônes sans déformation
+  # Le package pour générer les icônes sans déformation
   flutter_launcher_icons: ^0.13.1
 
 # Configuration premium de ton icône d'application
@@ -27,12 +31,12 @@ flutter_launcher_icons:
   image_path: "assets/yrion_logo_premium.png"
   
   # Configuration adaptative Android pour un centrage parfait sans déformation
-  adaptive_icon_background: "#FFFFFF" # Couleur de fond (ici blanc, tu peux changer le code HEX si besoin)
+  adaptive_icon_background: "#FFFFFF"
   adaptive_icon_foreground: "assets/yrion_logo_premium.png"
 
 flutter:
   uses-material-design: true
 
-  # Déclaration de ton dossier assets pour pouvoir utiliser toutes tes images dans le code
+  # Déclaration du dossier assets pour tes images
   assets:
     - assets/
