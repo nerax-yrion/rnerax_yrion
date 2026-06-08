@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:nerax_yrion/services/auth_service.dart'; // 🛠️ Correction de la faute de frappe (r ajouté)
-import 'package:nerax_yrion/partie connexion et inscription/connexion.dart';
-import 'package:nerax_yrion/partie connexion et inscription/inscription.dart'; 
-import 'package:nerax_yrion/partie navigation/navigation.dart'; // 🛠️ Correction du chemin selon ton dossier "partie navigation"
+import 'package:nerax_yrion/services/auth_service.dart'; 
+// 🚀 IMPORTATIONS DES PAGES DE DESIGN POUR LES ROUTES
+import 'package:nerax_yrion/partie connexion et inscription/connexion/design_connexio.dart'; // Importation de ta page de connexion (avec la coquille 'connexio')
+import 'package:nerax_yrion/partie connexion et inscription/inscription/design_inscription.dart'; // Importation de ta page d'inscription
+import 'package:nerax_yrion/partie navigation/navigation.dart'; // Importation de ton interface principale
 
 void main() async {
   // Assure l'initialisation complète des composants natifs de Flutter avant le lancement
@@ -50,7 +51,7 @@ class YrionApp extends StatelessWidget {
       routes: {
         '/connexion': (context) => const ConnexionPage(),
         '/inscription': (context) => const InscriptionPage(),
-        '/navigation': (context) => const NavigationPage(), // Ton fichier navigation.dart est connecté !
+        '/navigation': (context) => const NavigationPage(),
       },
     );
   }

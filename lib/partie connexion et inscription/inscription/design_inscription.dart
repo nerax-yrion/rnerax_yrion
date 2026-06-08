@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nerax_yrion/services/auth_service.dart'; // Importation de ton service réseau
+import 'inscription_controller.dart'; // Importation de la logique d'inscription
 
 class InscriptionPage extends StatefulWidget {
   const InscriptionPage({super.key});
@@ -9,71 +9,13 @@ class InscriptionPage extends StatefulWidget {
 }
 
 class _InscriptionPageState extends State<InscriptionPage> {
-  final TextEditingController usernameController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final AuthService _authService = AuthService(); // Instance du service d'authentification
+  // Instance de notre contrôleur de logique dédié
+  final InscriptionController _controller = InscriptionController();
 
   bool obscurePassword = true;
-  bool isLoading = false; // Gestion de l'état de chargement
+  bool isLoading = false; // Gestion de l'état de chargement local
 
-  /// Fonction premium d'inscription connectée au serveur Render
-  void _handleRegister() async {
-    final String username = usernameController.text.trim();
-    final String email = emailController.text.trim();
-    final String password = passwordController.text.trim();
-
-    // 1. Validation rapide côté client (UX de haut niveau)
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      _showCustomSnackBar(
-        message: "Veuillez remplir tous les champs.",
-        isError: true,
-      );
-      return;
-    }
-
-    if (password.length < 6) {
-      _showCustomSnackBar(
-        message: "Le mot de passe doit contenir au moins 6 caractères.",
-        isError: true,
-      );
-      return;
-    }
-
-    // 2. Activation du chargement
-    setState(() {
-      isLoading = true;
-    });
-
-    // 3. Appel API vers ton serveur FastAPI distant
-    final AuthResult result = await _authService.register(email, password, username);
-
-    // 4. Désactivation du chargement
-    setState(() {
-      isLoading = false;
-    });
-
-    // 5. Traitement du résultat
-    if (result.success) {
-      _showCustomSnackBar(
-        message: result.message ?? "Compte créé avec succès !",
-        isError: false,
-      );
-      
-      // 🚀 REDIRECTION ÉLITE : Redirige vers ton fichier navigation.dart après l'inscription réussie
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/navigation');
-      }
-    } else {
-      // Affichage de l'erreur dynamique renvoyée par le serveur (ex: "Cet email existe déjà")
-      _showCustomSnackBar(
-        message: result.message ?? "Une erreur est survenue lors de l'inscription.",
-        isError: true,
-      );
-    }
-  }
-
-  /// Système de notification SnackBar premium
+  /// Système de notification SnackBar premium conservé dans la vue
   void _showCustomSnackBar({required String message, required bool isError}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -103,9 +45,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
 
   @override
   void dispose() {
-    usernameController.dispose();
-    emailController.dispose();
-    passwordController.dispose();
+    _controller.dispose(); // Nettoyage propre des contrôleurs de texte via le pass-through
     super.dispose();
   }
 
@@ -142,7 +82,7 @@ class _InscriptionPageState extends State<InscriptionPage> {
                       borderRadius: BorderRadius.circular(30),
                       child: Image.asset(
                         "assets/yrion_logo_premium.png",
-                        fit: BoxFit.cover, // Rendu parfait sans déformation
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -162,9 +102,9 @@ class _InscriptionPageState extends State<InscriptionPage> {
 
                   const SizedBox(height: 30),
 
-                  /// USERNAME
+                  /// USERNAME (Géré par le contrôleur)
                   TextField(
-                    controller: usernameController,
+                    controller: _controller.usernameController,
                     style: const TextStyle(color: Colors.white),
                     textInputAction: TextInputAction.next,
                     decoration: InputDecoration(
@@ -182,9 +122,9 @@ class _InscriptionPageState extends State<InscriptionPage> {
 
                   const SizedBox(height: 20),
 
-                  /// EMAIL
+                  /// EMAIL (Géré par le contrôleur)
                   TextField(
-                    controller: emailController,
+                    controller: _controller.emailController,
                     style: const TextStyle(color: Colors.white),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
@@ -203,13 +143,17 @@ class _InscriptionPageState extends State<InscriptionPage> {
 
                   const SizedBox(height: 20),
 
-                  /// PASSWORD
+                  /// PASSWORD (Géré par le contrôleur)
                   TextField(
-                    controller: passwordController,
+                    controller: _controller.passwordController,
                     obscureText: obscurePassword,
                     style: const TextStyle(color: Colors.white),
                     textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _handleRegister(), // Valide si on appuie sur Entrée du clavier
+                    onSubmitted: (_) => _controller.handleRegister(
+                      context: context,
+                      onLoadingChanged: (val) => setState(() => isLoading = val),
+                      showSnackBar: (msg, err) => _showCustomSnackBar(message: msg, isError: err),
+                    ),
                     decoration: InputDecoration(
                       hintText: "Mot de passe",
                       hintStyle: const TextStyle(color: Colors.white54),
@@ -243,14 +187,17 @@ class _InscriptionPageState extends State<InscriptionPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
                       gradient: const LinearGradient(
-                        colors: [
-                          Colors.cyan,
-                          Colors.purple,
-                        ],
+                        colors: [Colors.cyan, Colors.purple],
                       ),
                     ),
                     child: ElevatedButton(
-                      onPressed: isLoading ? null : _handleRegister, // Désactive le bouton si chargement actif
+                      onPressed: isLoading 
+                          ? null 
+                          : () => _controller.handleRegister(
+                                context: context,
+                                onLoadingChanged: (val) => setState(() => isLoading = val),
+                                showSnackBar: (msg, err) => _showCustomSnackBar(message: msg, isError: err),
+                              ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,

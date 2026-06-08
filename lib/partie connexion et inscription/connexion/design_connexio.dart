@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nerax_yrion/services/auth_service.dart'; // Importation de ton service réseau
+import 'connexion_controller.dart'; // Importation de la logique qu'on vient de créer
 
 class ConnexionPage extends StatefulWidget {
   const ConnexionPage({super.key});
@@ -9,61 +9,13 @@ class ConnexionPage extends StatefulWidget {
 }
 
 class _ConnexionPageState extends State<ConnexionPage> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final AuthService _authService = AuthService(); // Instance du service d'authentification
-
+  // On instancie notre contrôleur de logique ici
+  final ConnexionController _controller = ConnexionController();
+  
   bool obscurePassword = true;
-  bool isLoading = false; // Variable d'état pour gérer le chargement mondial
+  bool isLoading = false;
 
-  /// Fonction premium de gestion de connexion connectée au serveur Render
-  void _handleLogin() async {
-    final String email = emailController.text.trim();
-    final String password = passwordController.text.trim();
-
-    // 1. Validation rapide côté client (UX de haut niveau)
-    if (email.isEmpty || password.isEmpty) {
-      _showCustomSnackBar(
-        message: "Veuillez remplir tous les champs.",
-        isError: true,
-      );
-      return;
-    }
-
-    // 2. Activation du chargement
-    setState(() {
-      isLoading = true;
-    });
-
-    // 3. Appel API vers ton serveur FastAPI distant
-    final AuthResult result = await _authService.login(email, password);
-
-    // 4. Désactivation du chargement
-    setState(() {
-      isLoading = false;
-    });
-
-    // 5. Traitement du résultat
-    if (result.success) {
-      _showCustomSnackBar(
-        message: "Connexion réussie ! Bienvenue sur yrion.",
-        isError: false,
-      );
-      
-      // 🚀 REDIRECTION ÉLITE : Envoie l'utilisateur vers ton fichier navigation.dart après connexion réussie
-      if (mounted) {
-        Navigator.pushReplacementNamed(context, '/navigation');
-      }
-    } else {
-      // Affichage de l'erreur dynamique renvoyée par le serveur
-      _showCustomSnackBar(
-        message: result.message ?? "Une erreur d'authentification est survenue.",
-        isError: true,
-      );
-    }
-  }
-
-  /// Système de notification SnackBar personnalisé digne d'une grande startup
+  /// Système de notification SnackBar conservé dans la vue
   void _showCustomSnackBar({required String message, required bool isError}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -93,18 +45,17 @@ class _ConnexionPageState extends State<ConnexionPage> {
 
   @override
   void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+    _controller.dispose(); // On nettoie les contrôleurs via le pass-through
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // Fond blanc premium appliqué ici
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView( // Évite les bugs d'affichage quand le clavier s'ouvre
+          child: SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(25),
               child: Column(
@@ -129,7 +80,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
                       borderRadius: BorderRadius.circular(30),
                       child: Image.asset(
                         "assets/yrion_logo_premium.png",
-                        fit: BoxFit.cover, // Ne déforme jamais l'icône, rendu parfait
+                        fit: BoxFit.cover,
                       ),
                     ),
                   ),
@@ -140,7 +91,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
                   const Text(
                     "Connexion",
                     style: TextStyle(
-                      color: Color(0xFF0F0F1A), // Texte sombre pour s'adapter au fond blanc
+                      color: Color(0xFF0F0F1A),
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
@@ -149,9 +100,9 @@ class _ConnexionPageState extends State<ConnexionPage> {
 
                   const SizedBox(height: 30),
 
-                  /// EMAIL
+                  /// EMAIL (Géré par le contrôleur)
                   TextField(
-                    controller: emailController,
+                    controller: _controller.emailController,
                     style: const TextStyle(color: Colors.white),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
@@ -170,13 +121,17 @@ class _ConnexionPageState extends State<ConnexionPage> {
 
                   const SizedBox(height: 20),
 
-                  /// PASSWORD
+                  /// PASSWORD (Géré par le contrôleur)
                   TextField(
-                    controller: passwordController,
+                    controller: _controller.passwordController,
                     obscureText: obscurePassword,
                     style: const TextStyle(color: Colors.white),
                     textInputAction: TextInputAction.done,
-                    onSubmitted: (_) => _handleLogin(), // Valide si on appuie sur Entrée
+                    onSubmitted: (_) => _controller.handleLogin(
+                      context: context,
+                      onLoadingChanged: (val) => setState(() => isLoading = val),
+                      showSnackBar: (msg, err) => _showCustomSnackBar(message: msg, isError: err),
+                    ),
                     decoration: InputDecoration(
                       hintText: "Mot de passe",
                       hintStyle: const TextStyle(color: Colors.white54),
@@ -190,9 +145,7 @@ class _ConnexionPageState extends State<ConnexionPage> {
                           });
                         },
                         icon: Icon(
-                          obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
+                          obscurePassword ? Icons.visibility_off : Icons.visibility,
                           color: Colors.white70,
                         ),
                       ),
@@ -212,14 +165,17 @@ class _ConnexionPageState extends State<ConnexionPage> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(18),
                       gradient: const LinearGradient(
-                        colors: [
-                          Colors.cyan,
-                          Colors.purple,
-                        ],
+                        colors: [Colors.cyan, Colors.purple],
                       ),
                     ),
                     child: ElevatedButton(
-                      onPressed: isLoading ? null : _handleLogin, // Désactive le bouton pendant le chargement
+                      onPressed: isLoading 
+                          ? null 
+                          : () => _controller.handleLogin(
+                                context: context,
+                                onLoadingChanged: (val) => setState(() => isLoading = val),
+                                showSnackBar: (msg, err) => _showCustomSnackBar(message: msg, isError: err),
+                              ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.transparent,
                         shadowColor: Colors.transparent,
@@ -259,7 +215,6 @@ class _ConnexionPageState extends State<ConnexionPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          // Utilisation du routage nommé pour aller vers l'inscription
                           Navigator.pushNamed(context, '/inscription');
                         },
                         child: const Text(
