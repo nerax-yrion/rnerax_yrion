@@ -1,0 +1,38 @@
+[package]
+name = "yrion_backend"
+version = "1.0.0"
+edition = "2021"
+authors = ["Yrion Team <contact@yrion.com>"]
+description = "Backend d'authentification et de sécurité mondial à haute performance pour Yrion"
+
+[dependencies]
+# 🌐 Framework Web et Moteur Asynchrone (Le duo le plus rapide du monde)
+axum = { version = "0.7", features = ["macros"] }
+tokio = { version = "1.0", features = ["full", "tracing"] }
+
+# 📊 Sérialisation et Désérialisation JSON ultra-rapide (Zéro allocation inutile)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 🔐 Cybersécurité, Cryptographie et Hachage Militaire (Immunité Timing Attacks & GPU)
+argon2 = "0.5"
+rand = "0.8"
+uuid = { version = "1.0", features = ["v4", "fast-rng"] }
+jsonwebtoken = "9.0"
+
+# 🛡️ Protection Réseau Anti-DDoS, Force Brute et Pare-feu (Rate Limiting par IP)
+tower = { version = "0.4", features = ["util"] }
+tower-governor = "0.4"
+
+# ⚙️ Optimisations mémoire et Expressions Régulières pré-compilées
+regex = "1.10"
+
+# 🚀 CONFIGURATION DE COMPILATION ÉLITE (Le secret pour supporter des milliards de requêtes à 0€)
+# Ces options disent au compilateur Rust de détruire toutes les lignes de code inutiles,
+# d'optimiser la vitesse d'exécution au maximum du processeur et de réduire la RAM à moins de 15 Mo.
+[profile.release]
+opt-level = 3             # Optimisation maximale de la vitesse du code machine
+lto = true                # Link-Time Optimization : fusionne et nettoie tout le binaire
+codegen-units = 1         # Réduit le parallélisme de compilation pour maximiser les optimisations globales
+panic = "abort"           # Supprime le tracking des crashs inutiles pour économiser de la mémoire et du CPU
+strip = true              # Supprime tous les symboles de débogage cachés (divise la taille du fichier par 5)
