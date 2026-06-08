@@ -1,5 +1,6 @@
 use axum::{routing::post, Router};
 use std::net::SocketAddr;
+use std::sync::Arc; // 🔑 Ajouté pour emballer proprement la configuration anti-DDoS
 use sqlx::postgres::PgPoolOptions; // 🐘 Importation du moteur de connexion PostgreSQL de Neon
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
@@ -38,8 +39,8 @@ async fn main() {
     
     println!("✅ LE COFFRE-FORT NEON EST À JOUR ET SÉCURISÉ !");
 
-    // 4. PROTECTION ANTI-DDOS & FORCE BRUTE (Pare-feu applicatif par IP)
-    let config_anti_ddos = Box::new(
+    // 4. PROTECTION ANTI-DDOS & FORCE BRUTE (Pare-feu applicatif par IP sécurisé par Arc)
+    let config_anti_ddos = Arc::new(
         GovernorConfigBuilder::default()
             .per_second(1)
             .burst_size(5)
@@ -55,7 +56,7 @@ async fn main() {
         .layer(
             ServiceBuilder::new()
                 .layer(GovernorLayer {
-                    config: Box::leak(config_anti_ddos),
+                    config: config_anti_ddos, // Code nettoyé : plus besoin de Box::leak !
                 })
         );
 

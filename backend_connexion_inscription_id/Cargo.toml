@@ -25,15 +25,13 @@ sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres",
 
 # 🛡️ Protection Réseau Anti-DDoS, Force Brute et Pare-feu (Rate Limiting par IP)
 tower = { version = "0.4", features = ["util"] }
-tower-governor = "0.4"
+tower_governor = "0.4"
 
 # ⚙️ Optimisations mémoire, Expressions Régulières et Gestion du fichier .env
 regex = "1.10"
 dotenvy = "0.15"
 
 # 🚀 CONFIGURATION DE COMPILATION ÉLITE (Le secret pour supporter des milliards de requêtes à 0€)
-# Ces options disent au compilateur Rust de détruire toutes les lignes de code inutiles,
-# d'optimiser la vitesse d'exécution au maximum du processeur et de réduire la RAM à moins de 15 Mo.
 [profile.release]
 opt-level = 3             # Optimisation maximale de la vitesse du code machine
 lto = true                # Link-Time Optimization : fusionne et nettoie tout le binaire
