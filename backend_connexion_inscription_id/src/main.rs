@@ -1,15 +1,27 @@
-use axum::{routing::post, Router};
+use axum::{routing::{get, post}, Router, Json}; // 🔑 Ajout de 'get' et 'Json' pour la route d'accueil
 use std::net::SocketAddr;
-use std::sync::Arc; // 🔑 Ajouté pour emballer proprement la configuration anti-DDoS
-use sqlx::postgres::PgPoolOptions; // 🐘 Importation du moteur de connexion PostgreSQL de Neon
+use std::sync::Arc; 
+use sqlx::postgres::PgPoolOptions; 
 use tower::ServiceBuilder;
 use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
+use serde_json::{json, Value}; // 📦 Pour structurer la réponse JSON proprement
 
 mod models;
 mod id;
 mod securite;
 mod inscription;
 mod connexion;
+
+// 🎯 FONCTION D'ACCUEIL QUI AFFICHE TES INFOS PERSONNALISÉES
+async fn page_accueil() -> Json<Value> {
+    Json(json!({
+        "Application": "Yrion Backend Forteresse",
+        "backend":"backend connexion inscription et id",
+        "Créateur": "Alan Mitha",
+        "Version": "1.0.0-Prod",
+        "Statut": "Opérationnel & Cyber-Sécurisé 🛡️"
+    }))
+}
 
 #[tokio::main]
 async fn main() {
@@ -25,7 +37,7 @@ async fn main() {
     // 2. OUVERTURE DU TUNNEL ULTRA-SÉCURISÉ VERS LE CLOUD NEON
     println!("🔌 Connexion au coffre-fort cloud Neon en cours...");
     let pool_database = PgPoolOptions::new()
-        .max_connections(50) // Capacité de 50 connexions simultanées maximum pour le pooler
+        .max_connections(50) 
         .connect(&database_url)
         .await
         .expect("❌ Impossible de se connecter à la base de données Neon. Vérifie ta clé dans le fichier .env !");
@@ -50,13 +62,14 @@ async fn main() {
 
     // 5. CONSTRUCTION DES ROUTES D'YRION (On partage la connexion DB avec les modules)
     let app = Router::new()
+        .route("/", get(page_accueil)) // ✨ LA VOILÀ ! Ta page d'accueil personnalisée
         .route("/api/auth/register", post(inscription::executer_inscription))
         .route("/api/auth/login", post(connexion::executer_connexion))
-        .with_state(pool_database) // 🔑 Injecte la connexion Neon pour qu'inscription.rs et connexion.rs s'en servent
+        .with_state(pool_database) 
         .layer(
             ServiceBuilder::new()
                 .layer(GovernorLayer {
-                    config: config_anti_ddos, // Code nettoyé : plus besoin de Box::leak !
+                    config: config_anti_ddos, 
                 })
         );
 
