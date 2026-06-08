@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:nerax_yrion/services/auth_service.dart';
+import 'package:nerax_yrion/services/auth_service_connexion_inscription_id.dart';
 
 class ConnexionController {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
-  // Libère la mémoire des contrôleurs (à appeler dans le dispose du Widget)
+  // Nettoie la mémoire vive de l'appareil
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
   }
 
-  /// Gestionnaire de connexion qui récupère les champs complétés
-  Future<AuthResult?> handleLogin({
+  /// Envoie les identifiants au serveur Rust sur Render pour une vraie connexion
+  Future<void> handleLogin({
     required BuildContext context,
     required Function(bool) onLoadingChanged,
     required Function(String message, bool isError) showSnackBar,
@@ -21,33 +21,32 @@ class ConnexionController {
     final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
 
-    // 1. Validation rapide côté client
-    if (email.isEmpty || password.isEmpty) {
-      showSnackBar("Veuillez remplir tous les champs.", true);
-      return null;
-    }
-
-    // 2. Activation du chargement dans l'UI
+    // 1. Déclenche l'animation de chargement (le cercle qui tourne)
     onLoadingChanged(true);
 
-    // 3. Appel API vers ton serveur FastAPI distant
-    final AuthResult result = await _authService.login(email, password);
+    // 2. Appel de ton service réseau connecté à Render
+    final Map<String, dynamic> result = await _authService.connecterUtilisateur(
+      email: email,
+      password: password,
+    );
 
-    // 4. Désactivation du chargement dans l'UI
+    // 3. Arrêt de l'animation de chargement
     onLoadingChanged(false);
 
-    // 5. Traitement du résultat
-    if (result.success) {
-      showSnackBar("Connexion réussie ! Bienvenue sur yrion.", false);
+    // 4. Analyse de la réponse de ton serveur Rust
+    if (result['success'] == true) {
+      showSnackBar(result['message'] ?? "Connexion réussie ! Bienvenue sur Yrion.", false);
+      
       if (context.mounted) {
+        // Redirection instantanée et sécurisée vers l'interface principale (ton APK)
         Navigator.pushReplacementNamed(context, '/navigation');
       }
     } else {
+      // Si les identifiants sont faux ou si le serveur a un problème
       showSnackBar(
-        result.message ?? "Une erreur d'authentification est survenue.",
+        result['message'] ?? "Identifiants incorrects ou problème de serveur.",
         true,
       );
     }
-    return result;
   }
 }

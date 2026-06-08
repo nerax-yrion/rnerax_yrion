@@ -1,21 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:nerax_yrion/services/auth_service.dart'; 
-// 🚀 IMPORTATIONS DES PAGES DE DESIGN POUR LES ROUTES
-import 'package:nerax_yrion/partie connexion et inscription/connexion/design_connexio.dart'; // Importation de ta page de connexion (avec la coquille 'connexio')
-import 'package:nerax_yrion/partie connexion et inscription/inscription/design_inscription.dart'; // Importation de ta page d'inscription
-import 'package:nerax_yrion/partie navigation/navigation.dart'; // Importation de ton interface principale
+
+// 🎯 IMPORTATIONS EXACTES DE TES DOSSIERS DE DESIGN
+import 'package:nerax_yrion/partie connexion et inscription/connexion/connexion.dart';
+import 'package:nerax_yrion/partie connexion et inscription/inscription/inscription.dart';
+import 'package:nerax_yrion/partie navigation/navigation.dart';
 
 void main() async {
-  // Assure l'initialisation complète des composants natifs de Flutter avant le lancement
+  // Assure l'initialisation complète des composants natifs de Flutter (nécessaire pour le stockage local)
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Instance de ton service d'authentification premium
+  // Instance de ton service d'authentification existant
   final AuthService authService = AuthService();
 
-  // Lecture ultra-sécurisée du token au démarrage pour l'Auto-Login
+  // Récupération du token via ton backend/stockage local pour l'Auto-Login
   final String? token = await authService.getToken();
 
-  // Si un token valide existe, on dirige directement vers la navigation principale, sinon vers la connexion
+  // Si le token généré par ton serveur est présent, l'APK va directement à l'accueil
   final String initialRoute = token != null ? '/navigation' : '/connexion';
 
   runApp(YrionApp(initialRoute: initialRoute));
@@ -32,7 +33,7 @@ class YrionApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'yrion',
 
-      // Configuration du thème épuré blanc demandé pour ton interface d'élite
+      // Thème épuré blanc officiel Yrion
       theme: ThemeData(
         brightness: Brightness.light,
         scaffoldBackgroundColor: Colors.white,
@@ -44,10 +45,10 @@ class YrionApp extends StatelessWidget {
         ),
       ),
 
-      // Définition de la route de démarrage dynamique
+      // Route de démarrage calculée dynamiquement selon l'état de connexion
       initialRoute: initialRoute,
 
-      // Registre centralisé des routes de l'application (Architecture Élite)
+      // Table des routes de ton APK
       routes: {
         '/connexion': (context) => const ConnexionPage(),
         '/inscription': (context) => const InscriptionPage(),

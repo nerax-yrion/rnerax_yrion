@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nerax_yrion/services/auth_service.dart';
+import 'package:nerax_yrion/services/auth_service_connexion_inscription_id.dart';
 
 class InscriptionController {
   final TextEditingController usernameController = TextEditingController();
@@ -14,8 +14,8 @@ class InscriptionController {
     passwordController.dispose();
   }
 
-  /// Gestionnaire d'inscription connecté à ton serveur Render
-  Future<AuthResult?> handleRegister({
+  /// Gère l'envoi des données d'inscription au serveur Rust distant
+  Future<void> handleRegister({
     required BuildContext context,
     required Function(bool) onLoadingChanged,
     required Function(String message, bool isError) showSnackBar,
@@ -24,41 +24,33 @@ class InscriptionController {
     final String email = emailController.text.trim();
     final String password = passwordController.text.trim();
 
-    // 1. Validation rapide côté client (UX de haut niveau)
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      showSnackBar("Veuillez remplir tous les champs.", true);
-      return null;
-    }
-
-    if (password.length < 6) {
-      showSnackBar("Le mot de passe doit contenir au moins 6 caractères.", true);
-      return null;
-    }
-
-    // 2. Activation du chargement dans l'UI
+    // 1. Activation de l'indicateur de chargement
     onLoadingChanged(true);
 
-    // 3. Appel API vers ton serveur FastAPI distant
-    final AuthResult result = await _authService.register(email, password, username);
+    // 2. Appel de ton service d'authentification connecté à Render
+    final Map<String, dynamic> result = await _authService.inscrireUtilisateur(
+      username: username,
+      email: email,
+      password: password,
+    );
 
-    // 4. Désactivation du chargement dans l'UI
+    // 3. Désactivation de l'indicateur de chargement
     onLoadingChanged(false);
 
-    // 5. Traitement du résultat
-    if (result.success) {
-      showSnackBar(result.message ?? "Compte créé avec succès !", false);
+    // 4. Analyse de la réponse du serveur
+    if (result['success'] == true) {
+      showSnackBar(result['message'] ?? "Compte créé avec succès ! Bienvenue sur Yrion.", false);
       
-      // 🚀 REDIRECTION ÉLITE : Redirige vers ton fichier navigation.dart après l'inscription réussie
       if (context.mounted) {
+        // Redirection instantanée vers l'interface de navigation principale
         Navigator.pushReplacementNamed(context, '/navigation');
       }
     } else {
-      // Affichage de l'erreur dynamique renvoyée par le serveur
+      // Affichage du message d'erreur précis renvoyé par ton serveur Rust
       showSnackBar(
-        result.message ?? "Une erreur est survenue lors de l'inscription.",
+        result['message'] ?? "Une erreur est survenue lors de l'inscription.",
         true,
       );
     }
-    return result;
   }
 }

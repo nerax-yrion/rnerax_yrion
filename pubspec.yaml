@@ -2,7 +2,7 @@ name: nerax_yrion
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+6
+version: 1.0.0+9
 
 environment:
   sdk: ^3.11.5
@@ -15,6 +15,7 @@ dependencies:
   # Packages premium pour la connexion sécurisée au serveur Render
   http: ^1.2.0
   flutter_secure_storage: ^9.0.0
+  shared_preferences: ^2.2.0 # 🔑 Ajouté pour la gestion locale des sessions Yrion
 
 dev_dependencies:
   flutter_test:
