@@ -1,10 +1,5 @@
 from fastapi import FastAPI
 
-# 🔐 AUTH (dossier: inscription_et_connexion)
-# Attention à la faute "inscrpition" présente sur ta capture
-from inscription_et_connexion.inscrpition import router as auth_register_router
-from inscription_et_connexion.connexion import router as auth_login_router
-
 # 🏠 ACCUEIL (dossier: acceuil)
 from acceuil.acceuil import router as home_router
 
@@ -12,45 +7,35 @@ from acceuil.acceuil import router as home_router
 from parametre_et_profil.profil import router as profile_router
 from parametre_et_profil.parametre import router as settings_router
 
-
-app = FastAPI(title="NX Backend 🚀")
-
-
-# =========================
-# 🔐 AUTH ROUTES
-# =========================
-app.include_router(auth_register_router, prefix="/auth")
-app.include_router(auth_login_router, prefix="/auth")
-
+app = FastAPI(title="NX Backend Application 🚀")
 
 # =========================
 # 🏠 HOME (FEED)
 # =========================
 app.include_router(home_router, prefix="/home")
 
-
 # =========================
 # 👤 PROFILE
 # =========================
 app.include_router(profile_router, prefix="/profile")
-
 
 # =========================
 # ⚙️ SETTINGS
 # =========================
 app.include_router(settings_router, prefix="/parametre")
 
-
 # =========================
-# 🧠 ROOT TEST
+# 👑 RACINE PERSONNALISÉE (Alan Mitha)
 # =========================
 @app.get("/")
 def root():
     return {
-        "status": "success",
-        "message": "NX backend actif 🚀",
-        "modules": [
-            "auth",
+        "Application": "NX Application Backend (Python) 🚀",
+        "Créateur": "Alan Mitha",
+        "Version": "1.0.0-Prod",
+        "Statut": "Opérationnel",
+        "Note": "L'authentification (Auth) est désormais déportée sur notre microservice d'élite Rust 🛡️",
+        "Modules_Actifs": [
             "home",
             "profile",
             "parametre"

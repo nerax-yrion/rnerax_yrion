@@ -1,10 +1,11 @@
-use axum::{routing::{get, post}, Router, Json}; // 🔑 Ajout de 'get' et 'Json' pour la route d'accueil
+use axum::{routing::{get, post}, Router, Json}; 
 use std::net::SocketAddr;
 use std::sync::Arc; 
 use sqlx::postgres::PgPoolOptions; 
 use tower::ServiceBuilder;
-use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer};
-use serde_json::{json, Value}; // 📦 Pour structurer la réponse JSON proprement
+// 🔑 Ajout de SmartIpKeyExtractor pour extraire l'IP derrière le proxy de Render
+use tower_governor::{governor::GovernorConfigBuilder, GovernorLayer, key_extractor::SmartIpKeyExtractor};
+use serde_json::{json, Value}; 
 
 mod models;
 mod id;
@@ -16,7 +17,6 @@ mod connexion;
 async fn page_accueil() -> Json<Value> {
     Json(json!({
         "Application": "Yrion Backend Forteresse",
-        "backend":"backend connexion inscription et id",
         "Créateur": "Alan Mitha",
         "Version": "1.0.0-Prod",
         "Statut": "Opérationnel & Cyber-Sécurisé 🛡️"
@@ -25,16 +25,15 @@ async fn page_accueil() -> Json<Value> {
 
 #[tokio::main]
 async fn main() {
-    // 1. CHARGEMENT DU FICHIER .ENV (Extrait ta clé secrète DATABASE_URL)
+    // 1. CHARGEMENT DU FICHIER .ENV 
     if let Err(e) = dotenvy::dotenv() {
         println!("⚠️  Note : Impossible de charger le fichier .env ({}), vérification des variables système.", e);
     }
 
-    // Récupération de la variable d'environnement ou crash propre si elle manque
     let database_url = std::env::var("DATABASE_URL")
         .expect("❌ ERREUR CRITIQUE : La variable DATABASE_URL n'est pas configurée dans le fichier .env !");
 
-    // 2. OUVERTURE DU TUNNEL ULTRA-SÉCURISÉ VERS LE CLOUD NEON
+    // 2. OUVERTURE DU TUNNEL VERS LE CLOUD NEON
     println!("🔌 Connexion au coffre-fort cloud Neon en cours...");
     let pool_database = PgPoolOptions::new()
         .max_connections(50) 
@@ -42,7 +41,7 @@ async fn main() {
         .await
         .expect("❌ Impossible de se connecter à la base de données Neon. Vérifie ta clé dans le fichier .env !");
 
-    // 🚀 3. L'AUTOMATISME PRO : Rust compare et injecte ton nouveau code SQL sur Neon
+    // 🚀 3. SYNCHRONISATION AVEC NEON
     println!("📦 Analyse du dossier 'migrations' et synchronisation avec Neon...");
     sqlx::migrate!("./migrations")
         .run(&pool_database)
@@ -51,18 +50,19 @@ async fn main() {
     
     println!("✅ LE COFFRE-FORT NEON EST À JOUR ET SÉCURISÉ !");
 
-    // 4. PROTECTION ANTI-DDOS & FORCE BRUTE (Pare-feu applicatif par IP sécurisé par Arc)
+    // 4. PROTECTION ANTI-DDOS COMPATIBLE CLOUD / RENDER (Utilisation de SmartIpKeyExtractor)
     let config_anti_ddos = Arc::new(
         GovernorConfigBuilder::default()
             .per_second(1)
             .burst_size(5)
+            .key_extractor(SmartIpKeyExtractor) // ✨ Indique au pare-feu de lire l'IP via le proxy Render !
             .finish()
             .unwrap(),
     );
 
-    // 5. CONSTRUCTION DES ROUTES D'YRION (On partage la connexion DB avec les modules)
+    // 5. CONSTRUCTION DES ROUTES D'YRION 
     let app = Router::new()
-        .route("/", get(page_accueil)) // ✨ LA VOILÀ ! Ta page d'accueil personnalisée
+        .route("/", get(page_accueil)) 
         .route("/api/auth/register", post(inscription::executer_inscription))
         .route("/api/auth/login", post(connexion::executer_connexion))
         .with_state(pool_database) 
