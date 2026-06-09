@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'accueil.dart';
-import 'profil.dart';
-import 'parametres.dart';
+import '../accueil.dart';
+import '../profil.dart';
+import '../parametres.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
