@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 // 🎯 IMPORTATIONS DE TES DOSSIERS DE DESIGN
 import 'package:nerax_yrion/partie connexion et inscription/connexion/connexion.dart';
 import 'package:nerax_yrion/partie connexion et inscription/inscription/inscription.dart';
-import 'package:nerax_yrion/partie navigation/iconne_de_navigation/navigation.dart';
+import 'package:nerax_yrion/navigation%20profil/partie%20navigation/iconne_de_navigation/navigation.dart';
 
 void main() {
   // On initialise l'application directement sans bloquer sur le service d'authentification

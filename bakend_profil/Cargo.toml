@@ -1,0 +1,24 @@
+[package]
+name = "yrion_backend"
+version = "1.0.0"
+edition = "2021"
+authors = ["Alexandre <astronaute_du_974>"]
+description = "Moteur de navigation et d'identité ultra-sécurisé pour Yrion"
+
+[dependencies]
+# 🌐 Framework Web asynchrone ultra-performant poussé par l'écosystème Tokio
+axum = { version = "0.7", features = ["multipart", "macros"] }
+
+# ⚡ Le moteur d'exécution asynchrone (Runtime) indispensable en production
+tokio = { version = "1.0", features = ["full"] }
+
+# 📦 Sérialisation et désérialisation JSON ultra-rapide (Zéro-copie disponible)
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# 🛡️ Couche de sécurité pour gérer le CORS (Autoriser ton app Flutter à se connecter)
+tower-http = { version = "0.5", features = ["cors"] }
+
+# 📊 Système de traçage et de logs industriels pour surveiller les tentatives de hack
+tracing = "0.1"
+tracing-subscriber = "0.3"
