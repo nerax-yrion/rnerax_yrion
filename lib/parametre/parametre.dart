@@ -4,7 +4,6 @@ import 'package:nerax_yrion/theme/cyber_header.dart';
 import 'package:nerax_yrion/theme/cyber_button.dart';
 import 'parametres_widgets.dart';
 import 'parametres_actions.dart';
-import 'nav_infos_compte.dart'; // 🛰️ CORRECTION 1 : Ajout de l'import manquant
 
 class ParametresPage extends StatefulWidget {
   const ParametresPage({super.key});
@@ -15,6 +14,25 @@ class ParametresPage extends StatefulWidget {
 
 class _ParametresPageState extends State<ParametresPage> {
   final ParametresActions _actions = ParametresActions();
+  String _compteActif = "@astronaute_du_974"; // Compte par défaut
+
+  // Liste des profils pour le changement de compte rapide
+  final List<Map<String, String>> _profilsLocaux = [
+    {
+      "username": "@astronaute_du_974",
+      "nom": "Alexandre",
+      "type": "Explorateur Principal",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
+      "role": "Personnel",
+    },
+    {
+      "username": "Sneakers_Shop_Tana",
+      "nom": "Yrion Streetwear",
+      "type": "Compte Magasin Vérifié",
+      "avatar": "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=150",
+      "role": "Professionnel",
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +53,25 @@ class _ParametresPageState extends State<ParametresPage> {
                   children: [
                     const SizedBox(height: 15),
 
+                    /// 🔄 SECTION : CHANGEMENT DE COMPTE
+                    ParametresWidgets.buildSectionDivider("COMMUTER DE DIMENSION (COMPTES)"),
+                    const SizedBox(height: 12),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _profilsLocaux.length,
+                      itemBuilder: (context, index) {
+                        final profil = _profilsLocaux[index];
+                        return ParametresWidgets.buildCyberAccountTile(
+                          profil: profil,
+                          isActive: _compteActif == profil['username'],
+                          onTap: () => setState(() => _compteActif = profil['username']!),
+                        );
+                      },
+                    ),
+
+                    const SizedBox(height: 30),
+
                     /// 🔐 SECTION 1 : SÉCURITÉ COMPTE
                     ParametresWidgets.buildSectionDivider("SÉCURITÉ COMPTE"),
                     const SizedBox(height: 12),
@@ -52,15 +89,12 @@ class _ParametresPageState extends State<ParametresPage> {
                     /// ⚙️ SECTION 2 : INFORMATIONS COMPTE
                     ParametresWidgets.buildSectionDivider("DONNÉES DU FLUX"),
                     const SizedBox(height: 12),
-                    ParametresWidgets.buildInfoContainer([
+                    ParametresWidgets.buildInfoContainer([ // 🛠️ CORRIGÉ : buildInfoContainer au lieu de withContainer
                       ParametresWidgets.buildMenuRow(
                         context, 
                         Icons.badge_rounded, 
                         "Consulter les informations du compte", 
-                        () => Navigator.push(
-                          context, 
-                          MaterialPageRoute(builder: (context) => const NavInfosComptePage())
-                        ),
+                        () => _actions.ouvrirInfosCompte(context) // 🛠️ CORRIGÉ : Utilise l'action dédiée sans Navigator direct
                       ),
                     ]),
 
@@ -86,9 +120,8 @@ class _ParametresPageState extends State<ParametresPage> {
 
                     const SizedBox(height: 45),
 
-                    /// 🚨 CORRECTION 2 : Paramètre 'icon' retiré de CyberButton pour éviter le crash.
-                    /// L'icône et le texte sont fusionnés proprement pour respecter ton design.
-                    CyberButton(
+                    /// 🚨 BOUTON DE DÉCONNEXION CYBERPUNK
+                    CyberButton( // 🛠️ CORRIGÉ : Suppression du paramètre 'icon' qui provoquait l'erreur
                       text: "INTERROMPRE LA SESSION (DÉCONNEXION)",
                       onTap: () => _actions.actionEjection(context),
                     ),

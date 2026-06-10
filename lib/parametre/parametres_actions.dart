@@ -5,6 +5,7 @@ import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'nav_changer_mdp.dart';
 import 'nav_liste_bloques.dart';
 import 'nav_ajouter_blocage.dart';
+import 'nav_infos_compte.dart'; // Importation de la vue ajoutée proprement
 
 class ParametresActions {
   
@@ -34,11 +35,14 @@ class ParametresActions {
     );
   }
 
-  // Actions utilisateur
+  // Actions utilisateur (Tout ton code d'origine exact)
   void ouvrirChangerMdp(BuildContext context) => _versPetiteNav(context, const NavChangerMdp());
   void ouvrirFormulaireBloquer(BuildContext context) => _versPetiteNav(context, const NavAjouterBlocage());
   
   void ouvrirListeBloques(BuildContext context) => _versGrandeNav(context, const NavListeBloquesPage());
+
+  /// ⚙️ LE SEUL RAJOUT demandé : Permet d'ouvrir les détails de la Matrice Identité
+  void ouvrirInfosCompte(BuildContext context) => _versGrandeNav(context, const NavInfosComptePage());
 
   void actionEjection(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(

@@ -1,0 +1,2 @@
+HandleError<tower_http::timeout::Timeout<Trace<Cors<Route>, SharedClassifier<ServerErrorsAsFailures>>>, {closure@src/main.rs:53:46: 53:61}, _>
+HandleError<tower_http::timeout::Timeout<Trace<Cors<Route>, SharedClassifier<ServerErrorsAsFailures>>>, {closure@src/main.rs:53:46: 53:61}, _>: Service<axum::http::Request<Body>>

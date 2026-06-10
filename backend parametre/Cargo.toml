@@ -1,0 +1,24 @@
+[package]
+name = "yrion_core_backend"
+version = "1.0.0"
+edition = "2021"
+authors = ["Yrion Core Team"]
+
+[dependencies]
+# Ajout de "original-uri" et "query" pour aider Axum à stabiliser le routage et la sécurité
+axum = { version = "0.7", features = ["macros", "original-uri", "query"] }
+# Configuration essentielle pour l'asynchronisme de notre serveur mondial (2026)
+tokio = { version = "1.0", features = ["full", "tracing"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# Activation de "util" dans tower pour éliminer définitivement l'erreur BoxError du Timeout
+tower = { version = "0.4", features = ["util"] }
+# tower-http gère le Cors, les Logs (trace) et la coupure anti-DoS (timeout)
+tower-http = { version = "0.5", features = ["cors", "trace", "timeout"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+thiserror = "1.0"
+jsonwebtoken = "9.3"
+argon2 = "0.5"
