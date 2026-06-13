@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-
-// Importation de ton fichier de design pure
-import 'orbit_navbar_view.dart';
-
-// Importations de tes pages officielles
-import '../partie splite/accueil.dart'; // Gardé tel quel selon ton arborescence
-
+import '../partie splite/accueil.dart'; 
 import '../profil/profil.dart';
 import 'package:nerax_yrion/parametre/parametre.dart';
-// L'écran de création que l'on va coder juste après
 import 'package:nerax_yrion/partie splite/create_split_page.dart'; 
 
 class NavigationPage extends StatefulWidget {
@@ -21,19 +14,19 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   int _currentIndex = 0;
 
-  // Liste ordonnée de tes écrans inclusifs du système YRION
+  // Les 3 pages officielles d'YRION
   final List<Widget> _pages = [
     const AccueilPage(),
     const ProfilPage(),
     const ParametresPage(),
   ];
 
-  // Fonction pour ouvrir l'interface de création en Overlay (par-dessus le reste)
   void _openCreateSplitOverlay() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.7), // Assombrit le fond pour le focus
       builder: (context) => const CreateSplitPage(),
     );
   }
@@ -41,50 +34,66 @@ class _NavigationPageState extends State<NavigationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF070512), // Fond cosmique sombre unifié
-      body: SafeArea(
-        child: Stack(
-          children: [
-            /// 1. LE CONTENU DE LA PAGE ACTUELLE
-            // IndexedStack évite de reconstruire les pages à chaque changement d'onglet
-            Padding(
-              padding: const EdgeInsets.only(left: 110),
-              child: IndexedStack(
-                index: _currentIndex,
-                children: _pages,
-              ),
-            ),
+      backgroundColor: const Color(0xFF070512),
+      body: Stack(
+        children: [
+          /// 1. LE CONTENU (100% Plein Écran, Zéro décalage)
+          IndexedStack(
+            index: _currentIndex,
+            children: _pages,
+          ),
 
-            /// 2. L'INJECTION DU DESIGN DE TA BARRE ORBITALE
-            Positioned(
-              left: 0,
-              top: 0,
-              bottom: 0,
-              width: 120, 
-              child: OrbitNavbarView(
-                currentIndex: _currentIndex,
-                onTabSelected: (index) {
-                  // Si ton OrbitNavbarView possède un index spécifique pour le "+" du Split,
-                  // tu le déclenches ici, sinon gère-le via les onglets classiques.
-                  setState(() {
-                    _currentIndex = index;
-                  });
-                },
-              ),
-            ),
-
-            /// 3. LE BOUTON DÉCLENCHEUR FLOTTANT YRION (Optionnel si pas intégré dans ton OrbitNavbarView)
-            Positioned(
-              bottom: 25,
-              right: 25,
-              child: FloatingActionButton(
-                backgroundColor: const Color(0xFF9D00FF), // Violet Néon YRION
+          /// 2. LE BOUTON DÉCLENCHEUR FLOTTANT YRION (Style Électrique Centré)
+          Positioned(
+            bottom: 30,
+            left: MediaQuery.of(context).size.width / 2 - 28,
+            child: GestureDetector(
+              onTap: _openCreateSplitOverlay,
+              child: Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF9D00FF),
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF9D00FF).withOpacity(0.4),
+                      blurRadius: 15,
+                      spreadRadius: 2,
+                    ),
+                  ],
+                ),
                 child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
-                onPressed: () {
-                  _openCreateSplitOverlay();
-                },
               ),
             ),
+          ),
+        ],
+      ),
+
+      /// 3. LA BARRE DE NAVIGATION NATIVE BASSE
+      bottomNavigationBar: Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: Colors.white10, width: 0.5)),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _currentIndex > 1 ? _currentIndex + 1 : _currentIndex,
+          onTap: (index) {
+            if (index == 1) return; // Zone morte réservée au bouton central "+"
+            setState(() {
+              _currentIndex = index > 1 ? index - 1 : index;
+            });
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: const Color(0xFF070512),
+          selectedItemColor: const Color(0xFF00D2FF), // Éclat Bleu Néon
+          unselectedItemColor: Colors.white38,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(icon: Icon(Icons.grid_view_rounded, size: 26), label: 'Accueil'),
+            BottomNavigationBarItem(icon: SizedBox(width: 40), label: ''), // Espace pour le bouton +
+            BottomNavigationBarItem(icon: Icon(Icons.person_rounded, size: 28), label: 'Profil'),
           ],
         ),
       ),

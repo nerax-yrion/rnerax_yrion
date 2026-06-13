@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+// Importation de ton nouveau composant d'interactions créé à l'étape précédente
+import 'package:nerax_yrion/iconne_de_navigation/split_interactions_sidebar.dart'; 
 
 class AccueilPage extends StatefulWidget {
   const AccueilPage({super.key});
@@ -92,7 +94,6 @@ class _SplitCardState extends State<SplitCard> {
   @override
   void initState() {
     super.initState();
-    // Si le Split de l'utilisateur contient une vidéo, on initialise le lecteur immédiatement
     if (widget.splitData['type'] == 'video' && widget.splitData['mediaUrl'] != null) {
       _videoController = VideoPlayerController.networkUrl(Uri.parse(widget.splitData['mediaUrl']))
         ..initialize().then((_) {
@@ -100,14 +101,13 @@ class _SplitCardState extends State<SplitCard> {
             _isPlayerInitialized = true;
           });
           _videoController?.setLooping(true);
-          _videoController?.play(); // Lecture automatique au focus
+          _videoController?.play();
         });
     }
   }
 
   @override
   void dispose() {
-    // CRITIQUE : Libérer la mémoire du téléphone quand l'utilisateur swipe pour éviter les crashs
     _videoController?.dispose();
     super.dispose();
   }
@@ -122,7 +122,7 @@ class _SplitCardState extends State<SplitCard> {
 
     return Stack(
       children: [
-        /// arrière-plan 1 : LE MÉDIA DE L'UTILISATEUR (Image ou Vidéo plein écran)
+        /// 1. LE MÉDIA DE L'UTILISATEUR (Image ou Vidéo plein écran)
         if (widget.splitData['type'] == 'image' && widget.splitData['mediaUrl'] != null)
           Positioned.fill(
             child: Image.network(
@@ -149,7 +149,7 @@ class _SplitCardState extends State<SplitCard> {
             ),
           ),
 
-        /// arrière-plan 2 : Calque sombre pour garantir la lisibilité du texte par-dessus les photos/vidéos
+        /// 2. CALQUE SOMBRE UNIFIÉ (Lisibilité du texte)
         Positioned.fill(
           child: Container(
             decoration: BoxDecoration(
@@ -159,101 +159,107 @@ class _SplitCardState extends State<SplitCard> {
                 colors: [
                   Colors.black.withOpacity(0.6),
                   Colors.black.withOpacity(0.3),
-                  Colors.black.withOpacity(0.8),
+                  Colors.black.withOpacity(0.85),
                 ],
               ),
             ),
           ),
         ),
 
-        /// INTERFACE DE SÉLECTION (Le Duel)
+        /// 3. L'INJECTION DU PANNEAU D'INTERACTIONS LATÉRALES (Likes, Commentaires, Relais)
+        Positioned(
+          bottom: 110, // Aligné parfaitement par rapport aux blocs de vote
+          right: 12,   // Positionné sur la droite, idéal pour les pouces droitiers
+          child: SplitInteractionsSidebar(splitData: widget.splitData),
+        ),
+
+        /// 4. INTERFACE DU DUEL (Zone de vote)
         SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            // INFO UX CRITIQUE : Ajout de right: 76 pour laisser la place aux icônes à droite
+            padding: const EdgeInsets.only(left: 16, right: 76, bottom: 20, top: 20),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end, // Aligné vers le bas style TikTok
+              mainAxisAlignment: MainAxisAlignment.end,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const Spacer(),
                 
                 /// QUESTION DU SPLIT
-                 /// QUESTION DU SPLIT
-Text(
-  widget.splitData['question'].toString().toUpperCase(),
-  style: TextStyle( // <--- ICI : On a enlevé le "const"
-    color: Colors.white,
-    fontSize: 22,
-    fontWeight: FontWeight.w900 ,// <--- Plus aucune vague rouge ici
-    shadows: const [ // <--- Tu peux rajouter const ici si tu veux optimiser les ombres
-      Shadow(blurRadius: 10, color: Colors.black, offset: Offset(2, 2)),
-    ],
-  ), // TextStyle
-  textAlign: TextAlign.center,
-), // Text
-const SizedBox(height: 30),
+                Text(
+                  widget.splitData['question'].toString().toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                    shadows: [
+                      Shadow(blurRadius: 10, color: Colors.black, offset: Offset(2, 2)),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 25),
             
-
-                /// BOUTONS BINAIRES
+                /// BOUTONS BINAIRES DE COMPÉTITION
                 Row(
                   children: [
                     // OPTION A (Néon Bleu)
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => {if (!hasVoted) widget.onVote('A')},
+                        onTap: () { if (!hasVoted) widget.onVote('A'); },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           height: 120,
                           decoration: BoxDecoration(
                             color: widget.splitData['userVoted'] == 'A' 
-                                ? const Color(0xFF00D2FF).withOpacity(0.4) 
-                                : Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(20),
+                                ? const Color(0xFF00D2FF).withOpacity(0.35) 
+                                : Colors.black.withOpacity(0.55),
+                            borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: const Color(0xFF00D2FF),
-                              width: widget.splitData['userVoted'] == 'A' ? 3 : 1,
+                              width: widget.splitData['userVoted'] == 'A' ? 3 : 1.5,
                             ),
                           ),
                           alignment: Alignment.center,
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           child: Text(
                             hasVoted ? "$percentA%\n${widget.splitData['optionA']}" : widget.splitData['optionA'],
                             style: TextStyle(
                               color: Colors.white, 
-                              fontSize: 16, 
-                              fontWeight: hasVoted ? FontWeight.bold : FontWeight.normal
+                              fontSize: 14, 
+                              fontWeight: hasVoted ? FontWeight.w900 : FontWeight.bold
                             ),
                             textAlign: TextAlign.center,
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
 
                     // OPTION B (Néon Violet)
                     Expanded(
                       child: GestureDetector(
-                        onTap: () => {if (!hasVoted) widget.onVote('B')},
+                        onTap: () { if (!hasVoted) widget.onVote('B'); },
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           height: 120,
                           decoration: BoxDecoration(
                             color: widget.splitData['userVoted'] == 'B' 
-                                ? const Color(0xFF9D00FF).withOpacity(0.4) 
-                                : Colors.black.withOpacity(0.6),
-                            borderRadius: BorderRadius.circular(20),
+                                ? const Color(0xFF9D00FF).withOpacity(0.35) 
+                                : Colors.black.withOpacity(0.55),
+                            borderRadius: BorderRadius.circular(18),
                             border: Border.all(
                               color: const Color(0xFF9D00FF),
-                              width: widget.splitData['userVoted'] == 'B' ? 3 : 1,
+                              width: widget.splitData['userVoted'] == 'B' ? 3 : 1.5,
                             ),
                           ),
                           alignment: Alignment.center,
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(10),
                           child: Text(
                             hasVoted ? "$percentB%\n${widget.splitData['optionB']}" : widget.splitData['optionB'],
                             style: TextStyle(
                               color: Colors.white, 
-                              fontSize: 16, 
-                              fontWeight: hasVoted ? FontWeight.bold : FontWeight.normal
+                              fontSize: 14, 
+                              fontWeight: hasVoted ? FontWeight.w900 : FontWeight.bold
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -262,12 +268,17 @@ const SizedBox(height: 30),
                     ),
                   ],
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 
-                /// COMPTEUR HUMAIN
+                /// COMPTEUR DE PARTICIPATION
                 Text(
-                  "$totalVotes avis exprimés",
-                  style: const TextStyle(color: Colors.white60, fontSize: 12, fontWeight: FontWeight.bold),
+                  "$totalVotes avis exprimés".toUpperCase(),
+                  style: const TextStyle(
+                    color: Colors.white54, 
+                    fontSize: 11, 
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.0,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
