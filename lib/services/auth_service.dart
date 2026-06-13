@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
 // Tes pages officielles
-import 'package:nerax_yrion/navigation%20acceuil/accueil.dart';
-import 'package:nerax_yrion/navigation%20profil/partie%20navigation/message.dart'; 
-import 'package:nerax_yrion/navigation profil/profil 1er plant/profil.dart';
-import 'package:nerax_yrion/navigation%20profil/partie%20navigation/parametres.dart';
+import 'package:nerax_yrion/partie%20splite/accueil.dart'; 
+import '../profil/profil.dart';
+import '../parametre/parametre.dart';
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
@@ -18,7 +17,6 @@ class _NavigationPageState extends State<NavigationPage> {
 
   final List<Widget> _pages = [
     const AccueilPage(),
-    const MessagePage(), 
     const ProfilPage(),
     const ParametresPage(),
   ];

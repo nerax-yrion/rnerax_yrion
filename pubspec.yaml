@@ -2,21 +2,24 @@ name: nerax_yrion
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.0+18
+version: 1.0.0+20
 
 environment:
-  sdk: ^3.11.5
+  sdk: '>=3.11.5 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.8
   
-  # Packages premium pour la connexion sécurisée au serveur Render
+  # Packages premium pour la connexion sécurisée au serveur Render / FastAPI
   http: ^1.2.0
   flutter_secure_storage: ^9.0.0
-  shared_preferences: ^2.2.0 # 🔑 Ajouté pour la gestion locale des sessions Yrion
+  shared_preferences: ^2.2.0 # 🔑 Gestion locale des sessions Yrion
   image_picker: ^1.2.2
+  
+  # 🎬 CRITIQUE : Requis pour le streaming des Splits vidéos des utilisateurs
+  video_player: ^2.8.6
 
 dev_dependencies:
   flutter_test:
@@ -32,13 +35,13 @@ flutter_launcher_icons:
   remove_alpha_ios: true
   image_path: "assets/yrion_logo_premium.png"
   
-  # Configuration adaptative Android pour un centrage parfait sans déformation
-  adaptive_icon_background: "#FFFFFF"
+  # Configuration adaptative Android - Corrigée en noir (#070512) pour coller à ton UI cosmique
+  adaptive_icon_background: "#070512"
   adaptive_icon_foreground: "assets/yrion_logo_premium.png"
 
 flutter:
   uses-material-design: true
 
-  # Déclaration du dossier assets pour tes images
+  # Déclaration du dossier assets pour tes images et logos
   assets:
     - assets/
