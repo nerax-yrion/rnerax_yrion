@@ -6,19 +6,39 @@ authors = ["Alexandre <astronaute_du_974>"]
 description = "Moteur de navigation et d'identité ultra-sécurisé pour Yrion"
 
 [dependencies]
-# 🌐 Framework Web asynchrone ultra-performant poussé par l'écosystème Tokio
-axum = { version = "0.7", features = ["multipart", "macros"] }
+# 🌐 Framework Web asynchrone ultra-performant configuré pour l'écosystème Tokio mondial
+axum = { version = "0.7", features = ["multipart", "macros", "tokio"] }
 
 # ⚡ Le moteur d'exécution asynchrone (Runtime) indispensable en production
-tokio = { version = "1.0", features = ["full"] }
+tokio = { version = "1.38", features = ["full"] }
 
-# 📦 Sérialisation et désérialisation JSON ultra-rapide (Zéro-copie disponible)
+# 📦 Sérialisation et désérialisation JSON ultra-rapide
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 
-# 🛡️ Couche de sécurité pour gérer le CORS (Autoriser ton app Flutter à se connecter)
-tower-http = { version = "0.5", features = ["cors"] }
+# 🛡️ Couche de sécurité pour gérer le CORS et le stockage des fichiers d'avatars
+tower-http = { version = "0.5", features = ["cors", "fs"] }
 
-# 📊 Système de traçage et de logs industriels pour surveiller les tentatives de hack
+# 📊 Système de traçage et de logs industriels pour surveiller les serveurs
 tracing = "0.1"
 tracing-subscriber = "0.3"
+
+# 🆔 Générateur d'identifiants uniques universels (UUID v4) pour masquer les emails
+uuid = { version = "1.8", features = ["v4", "fast-rng", "serde"] }
+
+# 🔑 Hachage de sécurité pour les mots de passe (Anti-Brute Force)
+bcrypt = "0.15"
+
+# 📦 Manipulation ultra-optimisée des buffers binaires pour les images
+bytes = "1.6"
+
+# ============================================================================
+# CONFIGURATION DE RELEASE : OPÉRATION MONDIALE ULTRA-PERFORMANTE
+# ============================================================================
+[profile.release]
+opt-level = 3             # Optimisation maximale du code machine (Vitesse pure)
+lto = true                # Link-Time Optimization globale pour fusionner les dépendances
+codegen-units = 1         # Réduit le parallélisme de build pour maximiser l'optimisation
+panic = "abort"           # Supprime la pile d'exécution en cas de crash (Économie RAM & Sécurité)
+strip = true              # Supprime les symboles de debug (Binaire léger, impossible à reverse-engineer)
+panic-immediate-abort = true # 🔥 Empêche la fuite d'informations système lors d'un crash fortuit

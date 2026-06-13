@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'package:nerax_yrion/theme/cyber_header.dart';
 import 'profil_data.dart';
@@ -13,17 +15,55 @@ class ProfilPage extends StatefulWidget {
 
 class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  
+  // Variables locales dynamiques alimentées par la session
+  String _pseudo = "Chargement...";
+  String _username = "...";
+  String _email = "...";
+  String _bio = "Pas de biographie renseignée.";
+  String _nbPublications = "0";
+  String _nbAbonnes = "0";
+  String _nbTribus = "0";
+  File? _avatarFichierLocal;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    _chargerProfilDynamique();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
+  }
+
+  /// Charge dynamiquement les informations uniques de l'utilisateur connecté
+  Future<void> _chargerProfilDynamique() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    
+    setState(() {
+      // Extraction des chaînes poussées lors de l'inscription / connexion
+      _pseudo = prefs.getString('user_username') ?? "Recrue Yrion";
+      _username = prefs.getString('user_username')?.toLowerCase().replaceAll(' ', '') ?? "user";
+      _email = prefs.getString('user_email') ?? "non_renseigne@yrion.com";
+      
+      // On synchronise également avec ton gestionnaire statique temporaire si nécessaire
+      _bio = prefs.getString('user_bio') ?? ProfilData.bio;
+      _nbPublications = prefs.getString('user_nb_publis') ?? ProfilData.nbPublications;
+      _nbAbonnes = prefs.getString('user_nb_abonnes') ?? ProfilData.nbAbonnes;
+      _nbTribus = prefs.getString('user_nb_tribus') ?? ProfilData.nbTribus;
+      
+      // Vérification de la présence d'un avatar configuré localement
+      _avatarFichierLocal = ProfilData.avatarFichierLocal;
+    });
+  }
+
+  /// Génère l'initiale de secours de manière sécurisée
+  String _obtenirInitiale() {
+    if (_pseudo.isEmpty) return "Y";
+    return _pseudo.trim().substring(0, 1).toUpperCase();
   }
 
   @override
@@ -48,14 +88,14 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
                           children: [
                             const SizedBox(height: 10),
 
-                            /// 👤 AVATAR UNIQUE (Image ou Initiale Néon)
+                            /// 👤 AVATAR UNIQUE (Image ou Initiale Néon Réactive)
                             _buildCyberAvatar(),
 
                             const SizedBox(height: 16),
 
-                            /// 🏷️ PSEUDONYME & BIO DYNAMIQUE
+                            /// 🏷️ IDENTITY BLOCK DYNAMIQUE (Pseudo & Identifiant)
                             Text(
-                              "${ProfilData.pseudo} @${ProfilData.username}",
+                              "$_pseudo @$_username",
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 20,
@@ -63,9 +103,23 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
                                 letterSpacing: 0.5,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 4),
+
+                            /// 📧 EXPOSITION DU MAIL DIRECTE (Demande Utilisateur Réglée)
                             Text(
-                              ProfilData.bio,
+                              _email,
+                              style: TextStyle(
+                                color: YrionTheme.cyanNeon.withOpacity(0.8),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+
+                            /// 📝 BIO DYNAMIQUE
+                            Text(
+                              _bio,
                               style: const TextStyle(
                                 color: YrionTheme.textLight,
                                 fontSize: 13,
@@ -75,21 +129,21 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
 
                             const SizedBox(height: 24),
 
-                            /// 📊 COMPTEURS DE STATS
+                            /// 📊 COMPTEURS DE STATS FLUIDES
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                _buildStatColumn(ProfilData.nbPublications, "PUBLIS"),
+                                _buildStatColumn(_nbPublications, "PUBLIS"),
                                 _buildStatElementDivider(),
-                                _buildStatColumn(ProfilData.nbAbonnes, "ABONNÉS"),
+                                _buildStatColumn(_nbAbonnes, "ABONNÉS"),
                                 _buildStatElementDivider(),
-                                _buildStatColumn(ProfilData.nbTribus, "TRIBUS"),
+                                _buildStatColumn(_nbTribus, "TRIBUS"),
                               ],
                             ),
 
                             const SizedBox(height: 24),
 
-                            /// 📝 BOUTON POUR CONFIGURER SON IMAGE
+                            /// 🛠️ BOUTON INTERACTIF D'IMAGE
                             _buildEditProfileButton(context),
 
                             const SizedBox(height: 30),
@@ -98,7 +152,7 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
                       ),
                     ),
                     
-                    /// 📑 ONGLETS
+                    /// 📑 ONGLETS RESTE ACCROCHÉS AU DÉFILEMENT
                     SliverPersistentHeader(
                       pinned: true,
                       delegate: _SliverAppBarDelegate(
@@ -135,7 +189,7 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
     );
   }
 
-  /// Gestion intelligente de l'avatar de l'utilisateur
+  /// Gestion intelligente et contrainte de l'avatar de l'utilisateur
   Widget _buildCyberAvatar() {
     return Container(
       padding: const EdgeInsets.all(3),
@@ -156,14 +210,12 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
         child: CircleAvatar(
           radius: 50,
           backgroundColor: YrionTheme.cardBackground,
-          // SI l'utilisateur a chargé sa propre photo : on l'affiche
-          backgroundImage: ProfilData.avatarFichierLocal != null 
-              ? FileImage(ProfilData.avatarFichierLocal!) 
+          backgroundImage: _avatarFichierLocal != null 
+              ? FileImage(_avatarFichierLocal!) 
               : null,
-          // SINON : on n'affiche rien en fond et on place sa lettre au centre
-          child: ProfilData.avatarFichierLocal == null
+          child: _avatarFichierLocal == null
               ? Text(
-                  ProfilData.obtenirInitiale(),
+                  _obtenirInitiale(),
                   style: const TextStyle(
                     color: YrionTheme.cyanNeon,
                     fontSize: 36,
@@ -198,7 +250,8 @@ class _ProfilPageState extends State<ProfilPage> with SingleTickerProviderStateM
           context,
           MaterialPageRoute(builder: (context) => const PhotoProfilPage()),
         ).then((_) {
-          setState(() {}); // Actualise la page au retour pour afficher la vraie photo choisie
+          // Relance la lecture en SharedPreferences & ProfilData au retour de l'écran d'ajustement
+          _chargerProfilDynamique(); 
         });
       },
       borderRadius: BorderRadius.circular(16),

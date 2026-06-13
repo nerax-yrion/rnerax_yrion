@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'package:nerax_yrion/theme/cyber_header.dart';
+import 'dart:convert'; // Requis pour encoder le JSON
+import 'package:http/http.dart' as http; // Requis pour communiquer avec le backend Rust
 import 'profil_data.dart';
 import 'photo_profil.dart';
 
@@ -13,6 +15,7 @@ class ModifierProfilPage extends StatefulWidget {
 
 class _ModifierProfilPageState extends State<ModifierProfilPage> {
   final _formKey = GlobalKey<FormState>();
+  bool _estEnCoursDeChargement = false; // Pour éviter le double clic pendant la requête
   
   // Contrôleurs pour récupérer les textes saisis par l'utilisateur
   late TextEditingController _pseudoController;
@@ -36,28 +39,89 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
     super.dispose();
   }
 
-  /// 💾 Sauvegarde les modifications dans ProfilData et ferme la page
-  void _sauvegarderModifications() {
-    if (_formKey.currentState!.validate()) {
-      ProfilData.mettreAJourIdentite(
-        nouveauPseudo: _pseudoController.text.trim(),
-        nouveauUsername: _usernameController.text.trim(),
-        nouvelleBio: _bioController.text.trim(),
-      );
-      
-      // Affiche un petit message de confirmation high-tech
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          backgroundColor: YrionTheme.cyanNeon,
-          content: Text(
-            "MATRICE D'IDENTITÉ MISE À JOUR", 
-            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-          ),
-        ),
+  /// 🛰️ TRANSMISSION SYNCHRONISÉE VERS LE SERVEUR RUST ET ENREGISTREMENT LOCAL
+  Future<void> _sauvegarderModifications() async {
+    if (!_formKey.currentState!.validate() || _estEnCoursDeChargement) return;
+
+    setState(() {
+      _estEnCoursDeChargement = true;
+    });
+
+    // 🎯 Préparation des variables nettoyées
+    final pseudoSaisi = _pseudoController.text.trim();
+    final usernameSaisi = _usernameController.text.trim();
+    final bioSaisie = _bioController.text.trim();
+
+    try {
+      // 🌐 Configuration de l'URL de ton serveur (remplace l'IP/port par ta configuration de déploiement)
+      final url = Uri.parse('http://10.0.2.2:8080/actualiser_textes'); // 10.0.2.2 pointe vers localhost depuis l'émulateur Android
+
+      // 📦 Corps de la requête au format attendu par la structure Rust 'RequeteMiseAJourProfil'
+      final corpsRequete = jsonEncode({
+        'email': ProfilData.email, // Ton backend a absolument besoin de l'email pour cibler la HashMap !
+        'pseudo': pseudoSaisi,
+        'nom_utilisateur': usernameSaisi, // Doit correspondre à la structure de modeles.rs
+        'bio': bioSaisie,
+      });
+
+      // 🚀 Envoi de la requête réseau vers Rust
+      final reponse = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: corpsRequete,
       );
 
-      Navigator.pop(context); // Retour au profil
+      // 🚦 Analyse du code d'état HTTP retourné par Axum
+      if (reponse.statusCode == 200) {
+        // Le backend Rust a validé et enregistré, on met à jour le cache local
+        ProfilData.mettreAJourIdentite(
+          nouveauPseudo: pseudoSaisi,
+          nouveauUsername: usernameSaisi,
+          nouvelleBio: bioSaisie,
+        );
+
+        if (!mounted) return;
+
+        // Affiche un petit message de confirmation high-tech
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: YrionTheme.cyanNeon,
+            content: Text(
+              "MATRICE D'IDENTITÉ SAUVEGARDÉE SUR LE SERVEUR", 
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+
+        Navigator.pop(context); // Retour au profil
+      } else {
+        // Gestion des erreurs renvoyées par le serveur (ex: NOT_FOUND 404)
+        _afficherErreur("ÉCHEC DE LA SYNCHRONISATION : CODE ${reponse.statusCode}");
+      }
+    } catch (e) {
+      // Gestion des pannes de réseau
+      _afficherErreur("ERREUR RESEAU : LE SERVEUR YRION EST INACCESSIBLE");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _estEnCoursDeChargement = false;
+        });
+      }
     }
+  }
+
+  void _afficherErreur(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: YrionTheme.magentaNeon,
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 
   @override
@@ -88,12 +152,11 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                             _buildAvatarApercu(),
                             const SizedBox(height: 12),
                             TextButton.icon(
-                              onPressed: () {
+                              onPressed: _estEnCoursDeChargement ? null : () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => const PhotoProfilPage()),
                                 ).then((_) {
-                                  // Rafraîchit l'aperçu si l'utilisateur change sa photo
                                   setState(() {});
                                 });
                               },
@@ -115,6 +178,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                         controller: _pseudoController,
                         hint: "Ton nom ou pseudo...",
                         icon: Icons.person_outline_rounded,
+                        enabled: !_estEnCoursDeChargement,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return "Le nom d'affichage ne peut pas être vide";
@@ -131,6 +195,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                         controller: _usernameController,
                         hint: "astronaute_du_974",
                         icon: Icons.alternate_email_rounded,
+                        enabled: !_estEnCoursDeChargement,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
                             return "L'identifiant est obligatoire";
@@ -150,25 +215,28 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                         controller: _bioController,
                         hint: "Raconte ton histoire dans l'espace Yrion...",
                         icon: Icons.notes_rounded,
+                        enabled: !_estEnCoursDeChargement,
                         maxLines: 3,
                       ),
 
                       const SizedBox(height: 40),
 
-                      /// 💾 BOUTON DE SAUVEGARDE EN GRADIENT NÉON
+                      /// 💾 BOUTON DE SAUVEGARDE EN GRADIENT NÉON / INDICATEUR DE CHARGEMENT
                       GestureDetector(
                         onTap: _sauvegarderModifications,
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon],
+                            gradient: LinearGradient(
+                              colors: _estEnCoursDeChargement 
+                                ? [Colors.grey.shade800, Colors.grey.shade900]
+                                : [YrionTheme.cyanNeon, YrionTheme.magentaNeon],
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
                             borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
+                            boxShadow: _estEnCoursDeChargement ? [] : [
                               BoxShadow(
                                 color: YrionTheme.cyanNeon.withOpacity(0.2),
                                 blurRadius: 12,
@@ -176,15 +244,24 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                               )
                             ],
                           ),
-                          child: const Center(
-                            child: Text(
-                              "ENREGISTRER LES CONFIGURATIONS",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 0.5,
-                              ),
-                            ),
+                          child: Center(
+                            child: _estEnCoursDeChargement
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: YrionTheme.cyanNeon,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "ENREGISTRER LES CONFIGURATIONS",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 0.5,
+                                    ),
+                                  ),
                           ),
                         ),
                       ),
@@ -221,6 +298,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
     required TextEditingController controller,
     required String hint,
     required IconData icon,
+    bool enabled = true,
     int maxLines = 1,
     String? Function(String?)? validator,
   }) {
@@ -228,7 +306,8 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
       controller: controller,
       maxLines: maxLines,
       validator: validator,
-      style: const TextStyle(color: Colors.white, fontSize: 14),
+      enabled: enabled,
+      style: TextStyle(color: enabled ? Colors.white : Colors.white30, fontSize: 14),
       cursorColor: YrionTheme.cyanNeon,
       decoration: InputDecoration(
         hintText: hint,
@@ -240,6 +319,10 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: YrionTheme.borderNeon.withOpacity(0.6)),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: YrionTheme.borderNeon.withOpacity(0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),

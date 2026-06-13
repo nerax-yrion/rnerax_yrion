@@ -1,5 +1,5 @@
+warning: unused manifest key: profile.release.panic-immediate-abort
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.90s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.41s

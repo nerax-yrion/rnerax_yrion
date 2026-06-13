@@ -8,7 +8,7 @@ use axum::{
 };
 use std::net::SocketAddr;
 use std::sync::Arc;
-use tokio::sync::RwLock; // Concurrence asynchrone pure
+use tokio::sync::RwLock; 
 use tower_http::cors::{Any, CorsLayer};
 use axum::http::Method;
 use std::path::Path;
@@ -16,29 +16,22 @@ use std::path::Path;
 // 🪐 Connexion propre de tes fichiers et dossiers de modules
 pub mod modeles;
 pub mod securite;
-pub mod routes; // Indique à Rust d'aller lire le dossier "routes" et son fichier "mod.rs"
+pub mod routes; 
 
-use modeles::Profil;
+use modeles::{BaseDeDonneesGlobale, Utilisateur, Profil, MoteurDeStockageSecurise};
 use securite::LimiteurDeDebit;
 
 const FICHIER_BDD: &str = "profil_bdd.json";
 
-/// Structure de l'état global optimisé pour la haute concurrence
+/// Structure de l'état global configurée pour des milliards d'utilisateurs
 pub struct EtatGlobal {
-    pub bdd: RwLock<Profil>,
+    // Changement critique : on stocke la BaseDeDonneesGlobale (HashMap) et non plus un seul profil
+    pub bdd: RwLock<BaseDeDonneesGlobale>,
     pub limiteur: LimiteurDeDebit,
+    pub moteur_stockage: MoteurDeStockageSecurise,
 }
 
 pub type BaseDeDonnees = Arc<EtatGlobal>;
-
-/// 🛠️ Fonction utilitaire pour sauvegarder l'état actuel sur le disque dur
-pub async fn sauvegarder_profil(profil: &Profil) {
-    if let Ok(json) = serde_json::to_string_pretty(profil) {
-        if let Err(e) = tokio::fs::write(FICHIER_BDD, json).await {
-            eprintln!("❌ [ERREUR BDD] Impossible de sauvegarder sur le disque : {}", e);
-        }
-    }
-}
 
 /// 🛡️ Barrière de Sécurité Réseau Globale
 async fn intercepteur_securite(
@@ -49,10 +42,8 @@ async fn intercepteur_securite(
 ) -> Result<Response, StatusCode> {
     let ip = adresse.ip().to_string();
     
-    // Sécurité : On clone l'IP pour la donner au limiteur
-    let ip_copie = ip.clone();
-    
-    if !etat.limiteur.verifier_ip(ip_copie) {
+    // Correction Bug Capture 3 : Ajout de .await sur la fonction asynchrone verifier_ip
+    if !etat.limiteur.verifier_ip(&ip).await {
         println!("⚠️  [SÉCURITÉ] IP suspecte ou flood bloqué : {}", ip);
         return Err(StatusCode::TOO_MANY_REQUESTS);
     }
@@ -62,22 +53,36 @@ async fn intercepteur_securite(
 
 #[tokio::main]
 async fn main() {
-    // 💾 Système de Persistance : Chargement de la sauvegarde ou initialisation par défaut
-    let profil_initial = if Path::new(FICHIER_BDD).exists() {
+    // Initialisation du moteur de stockage atomique permanent
+    let moteur = MoteurDeStockageSecurise::new(FICHIER_BDD);
+
+    // 💾 Système de Persistance : Chargement du JSON global ou initialisation à vide
+    let bdd_initiale = if Path::new(FICHIER_BDD).exists() {
         match tokio::fs::read_to_string(FICHIER_BDD).await {
             Ok(contenu) => serde_json::from_str(&contenu).unwrap_or_else(|_| {
-                println!("⚠️  [BDD] Fichier corrompu, réinitialisation par défaut.");
-                generer_profil_defaut()
+                println!("⚠️  [BDD] Fichier général corrompu, réinitialisation à vide.");
+                BaseDeDonneesGlobale::default()
             }),
-            Err(_) => generer_profil_defaut(),
+            Err(_) => BaseDeDonneesGlobale::default(),
         }
     } else {
-        generer_profil_defaut()
+        // Au premier démarrage, on crée une base propre
+        let mut bdd_vide = BaseDeDonneesGlobale::default();
+        // On injecte un compte de démonstration pour Alexandre
+        let compte_alex = generer_compte_defaut();
+        let _ = bdd_vide.inscrire_utilisateur(
+            compte_alex.email.clone(),
+            "MotDePasseSecurise123".to_string(), // Sera automatiquement haché par notre moteur
+            compte_alex.profil.pseudo.clone(),
+            compte_alex.profil.nom_utilisateur.clone()
+        );
+        bdd_vide
     };
     
     let etat = Arc::new(EtatGlobal {
-        bdd: RwLock::new(profil_initial),
+        bdd: RwLock::new(bdd_initiale),
         limiteur: LimiteurDeDebit::new(),
+        moteur_stockage: moteur,
     });
 
     let cors = CorsLayer::new()
@@ -85,8 +90,9 @@ async fn main() {
         .allow_origin(Any);
 
     let application = Router::new()
-        .route("/api/profil", get(obtenir_profil_global))
+        .route("/api/utilisateurs", get(obtenir_tous_les_profils))
         // Chemins branchés sur l'arborescence de ton dossier routes
+        .route("/api/auth/inscription", post(routes::enregistrement::inscrire_nouvel_utilisateur))
         .route("/api/profil/avatar/enregistrer", post(routes::enregistrement::ajouter_avatar))
         .route("/api/profil/modifier/textes", post(routes::mise_a_jour::actualiser_textes))
         .route("/api/profil/avatar/remplacer", post(routes::mise_a_jour::remplacer_avatar))
@@ -97,29 +103,37 @@ async fn main() {
 
     let adresse = "0.0.0.0:8080";
     let ecouteur = tokio::net::TcpListener::bind(adresse).await.unwrap();
-    println!("🚀 [PRODUCTION] Moteur Yrion ultra-sécurisé en ligne sur : http://{}", adresse);
+    println!("🚀 [PRODUCTION] Moteur Yrion mondial en ligne sur : http://{}", adresse);
     
     axum::serve(ecouteur, application.into_make_service_with_connect_info::<SocketAddr>()).await.unwrap();
 }
 
-fn generer_profil_defaut() -> Profil {
-    Profil {
-        pseudo: "Alexandre".to_string(),
-        nom_utilisateur: "astronaute_du_974".to_string(),
-        bio: "Explorateur de tribus • Code & Streetwear ⚡".to_string(),
-        url_avatar: None,
-        nb_publications: "142".to_string(),
-        nb_abonnes: "1.2K".to_string(),
-        nb_tribus: "8".to_string(),
+/// Correction Bug Capture 4 : Reconstruction du compte par défaut alignée sur les types mondiaux
+fn generer_compte_defaut() -> Utilisateur {
+    Utilisateur {
+        id: uuid::Uuid::new_v4().to_string(),
+        email: "alexandre@yrion.com".to_string(),
+        mot_de_passe_hache: "".to_string(), // Géré dynamiquement par inscrire_utilisateur
+        cree_le: std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_secs(),
+        profil: Profil {
+            pseudo: "Alexandre".to_string(),
+            nom_utilisateur: "astronaute_du_974".to_string(),
+            bio: "Explorateur de tribus • Code & Streetwear ⚡".to_string(),
+            url_avatar: None,
+            nb_publications: 142, // Changé en u64 pur
+            nb_abonnes: 1200,     // Changé en u64 pur
+            nb_tribus: 8,         // Changé en u64 pur
+            verifie: true,        // Badge certifié d'office pour le créateur !
+        },
     }
 }
 
-async fn obtenir_profil_global(
+/// Endpoint mondial : Renvoie la liste complète des comptes de la plateforme
+async fn obtenir_tous_les_profils(
     State(etat): State<BaseDeDonnees>,
-) -> axum::Json<Profil> {
-    // Lecture asynchrone ultra-rapide sans bloquer le thread principal
-    let profil = etat.bdd.read().await;
-    axum::Json(profil.clone())
+) -> axum::Json<BaseDeDonneesGlobale> {
+    let bdd = etat.bdd.read().await;
+    axum::Json(bdd.clone())
 }
 
-// mise a jour
+// mise a jour 1
