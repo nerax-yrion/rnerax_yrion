@@ -66,7 +66,7 @@ impl LimiteurDeDebit {
 
 /// ============================================================================
 /// FONCTION : assainir_texte (Garde-fou Anti-XSS avancé et filtrage de caractères)
-/// DESCRIPTION : Nettoie les chaînes de texte entrantes sans allocation inutile.
+/// DESCRIPTION : Nettoie les chaînes de texte entrantes sans allocation inutile.s
 /// ============================================================================
 pub fn assainir_texte(entree: &str) -> String {
     // Allocation préventive stricte pour éviter les attaques par déni de service sur la mémoire

@@ -316,3 +316,13 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(_SliverAppBarDelegate oldDelegate) => false;
 }
+
+
+/// ============================================================================
+/// COMPOSANT : Écran Profil Utilisateur (Mon Passeport)
+/// DESCRIPTION : Gère l'affichage dynamique et réactif du profil de l'utilisateur.
+///              Récupère les informations de session (pseudo, email) en asynchrone
+///              depuis le stockage local (SharedPreferences).
+/// ARCHITECTURE UI : Utilises des Slivers et un NestedScrollView pour offrir un 
+///                   effet de défilement cyberpunk fluide avec onglets épinglés.
+/// ============================================================================

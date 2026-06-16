@@ -32,6 +32,19 @@ bcrypt = "0.15"
 # 📦 Manipulation ultra-optimisée des buffers binaires pour les images
 bytes = "1.6"
 
+# 🗄️ MISE A JOUR : Connecteur Neon / PostgreSQL & Exécuteur de migrations automatiques
+# Obligatoire avec le support SSL (runtime-tokio-native-tls) pour que Render s'interconnecte à Neon
+sqlx = { version = "0.8", features = [
+    "runtime-tokio-native-tls", 
+    "postgres", 
+    "macros", 
+    "chrono", 
+    "migrate"
+] }
+
+# 📅 MISE A JOUR : Gestionnaire de temps pour la synchronisation des colonnes created_at et updated_at
+chrono = { version = "0.4", features = ["serde"] }
+
 # ============================================================================
 # CONFIGURATION DE RELEASE : OPÉRATION MONDIALE ULTRA-PERFORMANTE
 # ============================================================================

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http; // requis pour l'envoi Multipart vers le serveur Rust
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'package:nerax_yrion/theme/cyber_header.dart';
 import 'profil_data.dart';
@@ -15,6 +16,7 @@ class PhotoProfilPage extends StatefulWidget {
 class _PhotoProfilPageState extends State<PhotoProfilPage> {
   final ImagePicker _picker = ImagePicker();
   File? _imageSelectionnee;
+  bool _estEnCoursDeChargement = false; // Bloque l'interface pendant l'upload réseau
 
   Future<void> _recupererImage(ImageSource source) async {
     try {
@@ -22,7 +24,7 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
         source: source,
         maxWidth: 500,
         maxHeight: 500,
-        imageQuality: 85,
+        imageQuality: 85, // Compression légère pour respecter les limites du serveur
       );
 
       if (fichierSelectionne != null) {
@@ -35,11 +37,77 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
     }
   }
 
-  void _sauvegarderEtQuitter() {
-    if (_imageSelectionnee != null) {
-      ProfilData.mettreAJourAvatar(_imageSelectionnee!);
+  /// 🚀 ENVOI MULTIPART VERS LE SERVEUR RUST ET ENREGISTREMENT LOCAL
+  Future<void> _sauvegarderEtQuitter() async {
+    if (_imageSelectionnee == null || _estEnCoursDeChargement) return;
+
+    setState(() {
+      _estEnCoursDeChargement = true;
+    });
+
+    try {
+      // 🌐 URL de ton endpoint Axum dédié aux avatars
+      final url = Uri.parse('http://10.0.2.2:8080/remplacer_avatar'); // 10.0.2.2 = localhost sur émulateur Android
+
+      // 📦 Préparation de la requête multipart (format requis pour envoyer des fichiers physiques)
+      final requete = http.MultipartRequest('POST', url);
+
+      // 🔑 Ajout des champs textuels nécessaires pour que le serveur sache à qui appartient l'image
+      requete.fields['email'] = ProfilData.email;
+
+      // 🖼️ Ajout du fichier image réel
+      final fluxFichier = await http.MultipartFile.fromPath(
+        'avatar', // Cette clé DOIT correspondre au champ attendu par ton extracteur Multipart côté Rust
+        _imageSelectionnee!.path,
+      );
+      requete.files.add(fluxFichier);
+
+      // 🛫 Expédition du paquet vers le serveur
+      final reponseEnvoi = await requete.send();
+      final reponse = await http.Response.fromStream(reponseEnvoi);
+
+      // 🚦 Analyse de la réponse du serveur Axum
+      if (reponse.statusCode == 200) {
+        // Le serveur a bien enregistré le fichier, on applique le changement dans le cache local
+        ProfilData.mettreAJourAvatar(_imageSelectionnee!);
+
+        if (!mounted) return;
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            backgroundColor: YrionTheme.cyanNeon,
+            content: Text(
+              "CAPTEUR VISUEL SYNCHRONISÉ", 
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            ),
+          ),
+        );
+
+        Navigator.pop(context); // Retour
+      } else {
+        _afficherErreur("ERREUR SERVEUR : CODE ${reponse.statusCode}");
+      }
+    } catch (e) {
+      _afficherErreur("ERREUR RÉSEAU : TRANSMISSION DE L'IMAGE IMPOSSIBLE");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _estEnCoursDeChargement = false;
+        });
+      }
     }
-    Navigator.pop(context);
+  }
+
+  void _afficherErreur(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        backgroundColor: YrionTheme.magentaNeon,
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
+      ),
+    );
   }
 
   @override
@@ -97,7 +165,7 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                     const SizedBox(height: 50),
 
                     GestureDetector(
-                      onTap: () => _afficherMenuChoix(context),
+                      onTap: _estEnCoursDeChargement ? null : () => _afficherMenuChoix(context),
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -124,14 +192,25 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
-                            gradient: const LinearGradient(colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon]),
+                            gradient: _estEnCoursDeChargement
+                                ? LinearGradient(colors: [Colors.grey.shade800, Colors.grey.shade900])
+                                : const LinearGradient(colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon]),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: const Center(
-                            child: Text(
-                              "APPLIQUER LA NOUVELLE IMAGE",
-                              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                            ),
+                          child: Center(
+                            child: _estEnCoursDeChargement
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.black,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text(
+                                    "APPLIQUER LA NOUVELLE IMAGE",
+                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
                           ),
                         ),
                       ),
