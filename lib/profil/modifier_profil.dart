@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'package:nerax_yrion/theme/cyber_header.dart';
-import 'dart:convert'; // Requis pour encoder le JSON
-import 'package:http/http.dart' as http; // Requis pour communiquer avec le backend Rust
 import 'profil_data.dart';
 import 'photo_profil.dart';
+import 'auth_service_profil.dart';
 
+/// ====================================================================
+/// YRION SOCIAL ECOSYSTEM : INTERFACE SÉCURISÉE D'ÉDITION D'IDENTITÉ
+/// ARCHITECTURE : Tolérance aux Pannes, Rollback Natif & Anti-Flood
+/// INTÉGRATION : Pipeline Synchrone avec Neon Database via Axum (Render)
+/// ====================================================================
 class ModifierProfilPage extends StatefulWidget {
   const ModifierProfilPage({super.key});
 
@@ -15,17 +19,20 @@ class ModifierProfilPage extends StatefulWidget {
 
 class _ModifierProfilPageState extends State<ModifierProfilPage> {
   final _formKey = GlobalKey<FormState>();
-  bool _estEnCoursDeChargement = false; // Pour éviter le double clic pendant la requête
+  bool _estEnCoursDeChargement = false;
   
-  // Contrôleurs pour récupérer les textes saisis par l'utilisateur
-  late TextEditingController _pseudoController;
-  late TextEditingController _usernameController;
-  late TextEditingController _bioController;
+  // Instance unique de notre passerelle asynchrone haut rendement
+  final AuthServiceProfil _authServiceProfil = AuthServiceProfil();
+
+  // Contrôleurs isolés pour éviter les fuites de mémoire (Memory Leaks)
+  late final TextEditingController _pseudoController;
+  late final TextEditingController _usernameController;
+  late final TextEditingController _bioController;
 
   @override
   void initState() {
     super.initState();
-    // On pré-remplit les champs avec les données actuelles de l'utilisateur
+    // Capture et isolation immédiate de l'état actuel du cache centralisé
     _pseudoController = TextEditingController(text: ProfilData.pseudo);
     _usernameController = TextEditingController(text: ProfilData.username);
     _bioController = TextEditingController(text: ProfilData.bio);
@@ -33,76 +40,88 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
 
   @override
   void dispose() {
+    // Destruction propre des canaux de communication textuels
     _pseudoController.dispose();
     _usernameController.dispose();
     _bioController.dispose();
     super.dispose();
   }
 
-  /// 🛰️ TRANSMISSION SYNCHRONISÉE VERS LE SERVEUR RUST ET ENREGISTREMENT LOCAL
+  /// 🛰️ SÉCURISATION & TRANSMISSION MULTI-COUCHES VERS LE CLUSTER RENDER
   Future<void> _sauvegarderModifications() async {
+    // Blocage immédiat des requêtes concurrentes (Flood Protection)
     if (!_formKey.currentState!.validate() || _estEnCoursDeChargement) return;
 
     setState(() {
       _estEnCoursDeChargement = true;
     });
 
-    // 🎯 Préparation des variables nettoyées
-    final pseudoSaisi = _pseudoController.text.trim();
-    final usernameSaisi = _usernameController.text.trim();
-    final bioSaisie = _bioController.text.trim();
+    // 🛡️ Assainissement des données (Sanitization) : Élimination des espaces superflus et risques d'injection
+    final String pseudoSaisi = _pseudoController.text.trim();
+    final String usernameSaisi = _usernameController.text.trim().replaceAll(' ', '');
+    final String bioSaisie = _bioController.text.trim();
+
+    // 💾 SAUVEGARDE DE SECOURS (Memento pattern) pour le Rollback en cas de rupture de flux
+    final String ancienPseudo = ProfilData.pseudo;
+    final String ancienUsername = ProfilData.username;
+    final String ancienneBio = ProfilData.bio;
+
+    // Étape 1 : Application optimiste des modifications en cache local pour une interface ultra réactive
+    ProfilData.mettreAJourIdentite(
+      nouveauPseudo: pseudoSaisi,
+      nouveauUsername: usernameSaisi,
+      nouvelleBio: bioSaisie,
+    );
 
     try {
-      // 🌐 Configuration de l'URL de ton serveur (remplace l'IP/port par ta configuration de déploiement)
-      final url = Uri.parse('http://10.0.2.2:8080/actualiser_textes'); // 10.0.2.2 pointe vers localhost depuis l'émulateur Android
-
-      // 📦 Corps de la requête au format attendu par la structure Rust 'RequeteMiseAJourProfil'
-      final corpsRequete = jsonEncode({
-        'email': ProfilData.email, // Ton backend a absolument besoin de l'email pour cibler la HashMap !
-        'pseudo': pseudoSaisi,
-        'nom_utilisateur': usernameSaisi, // Doit correspondre à la structure de modeles.rs
-        'bio': bioSaisie,
-      });
-
-      // 🚀 Envoi de la requête réseau vers Rust
-      final reponse = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: corpsRequete,
+      // Étape 2 : Expédition de la charge utile vers l'API Axum en production
+      final bool validationServeur = await _authServiceProfil.actualiserTextesProfil(
+        userId: ProfilData.userId,
+        nouveauPseudo: pseudoSaisi,
+        nouvelleBio: bioSaisie,
       );
 
-      // 🚦 Analyse du code d'état HTTP retourné par Axum
-      if (reponse.statusCode == 200) {
-        // Le backend Rust a validé et enregistré, on met à jour le cache local
-        ProfilData.mettreAJourIdentite(
-          nouveauPseudo: pseudoSaisi,
-          nouveauUsername: usernameSaisi,
-          nouvelleBio: bioSaisie,
-        );
-
+      if (validationServeur) {
         if (!mounted) return;
 
-        // Affiche un petit message de confirmation high-tech
+        // Feedback haptique/visuel de haut niveau
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: YrionTheme.cyanNeon,
-            content: Text(
-              "MATRICE D'IDENTITÉ SAUVEGARDÉE SUR LE SERVEUR", 
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            duration: Duration(seconds: 2),
+            content: Row(
+              children: [
+                Icon(Icons.gpp_good_rounded, color: Colors.black),
+                SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    "MATRICE D'IDENTITÉ SYNCHRONISÉE SUR NEON SQL", 
+                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, letterSpacing: 0.5),
+                  ),
+                ),
+              ],
             ),
           ),
         );
 
-        Navigator.pop(context); // Retour au profil
+        Navigator.pop(context); // Clôture et retour au hub principal
       } else {
-        // Gestion des erreurs renvoyées par le serveur (ex: NOT_FOUND 404)
-        _afficherErreur("ÉCHEC DE LA SYNCHRONISATION : CODE ${reponse.statusCode}");
+        // 🔄 ROLLBACK : Le serveur a rejeté la requête, on restaure l'ancien état sain
+        ProfilData.mettreAJourIdentite(
+          nouveauPseudo: ancienPseudo,
+          nouveauUsername: ancienUsername,
+          nouvelleBio: ancienneBio,
+        );
+        _afficherErreur("REJET DES CONFIGURATIONS PAR LE NOYAU RUST (VÉRIFIE TES ENTRÉES)");
       }
-    } catch (e) {
-      // Gestion des pannes de réseau
-      _afficherErreur("ERREUR RESEAU : LE SERVEUR YRION EST INACCESSIBLE");
+    } catch (erreurReseau) {
+      // 🔄 ROLLBACK : Coupoure réseau ou crash cloud, protection des données locales
+      ProfilData.mettreAJourIdentite(
+        nouveauPseudo: ancienPseudo,
+        nouveauUsername: ancienUsername,
+        nouvelleBio: ancienneBio,
+      );
+      _afficherErreur("PERTE DE LIAISON : LE CLUSTER YRION EST MOMENTANÉMENT INACCESSIBLE");
     } finally {
       if (mounted) {
         setState(() {
@@ -116,9 +135,19 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: YrionTheme.magentaNeon,
-        content: Text(
-          message,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Row(
+          children: [
+            const Icon(Icons.error_outline_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -131,7 +160,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
       body: SafeArea(
         child: Column(
           children: [
-            /// 🛰️ EN-TÊTE NÉON OFFICIEL
+            /// En-tête Cyber-Écosystème Yrion
             const CyberHeader(title: "ÉDITER L'IDENTITÉ", showBackButton: true),
 
             Expanded(
@@ -145,11 +174,14 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                     children: [
                       const SizedBox(height: 25),
 
-                      /// 👤 ZONE DE RACCORDEMENT VERS LA PHOTO DE PROFIL
+                      /// 👤 COMPOSANT AVATAR AVEC GESTION MULTI-FLUX TERMINAL / CLOUD
                       Center(
                         child: Column(
                           children: [
-                            _buildAvatarApercu(),
+                            Hero(
+                              tag: 'avatar_capsule_edit',
+                              child: _buildAvatarApercu(),
+                            ),
                             const SizedBox(height: 12),
                             TextButton.icon(
                               onPressed: _estEnCoursDeChargement ? null : () {
@@ -157,13 +189,14 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                                   context,
                                   MaterialPageRoute(builder: (context) => const PhotoProfilPage()),
                                 ).then((_) {
+                                  // Forçage du re-render pour capturer instantanément l'avatar local modifié
                                   setState(() {});
                                 });
                               },
-                              icon: const Icon(Icons.camera_alt_rounded, color: YrionTheme.cyanNeon, size: 18),
+                              icon: const Icon(Icons.add_photo_alternate_rounded, color: YrionTheme.cyanNeon, size: 18),
                               label: const Text(
-                                "MODIFIER LA PHOTO",
-                                style: TextStyle(color: YrionTheme.cyanNeon, fontSize: 12, fontWeight: FontWeight.bold),
+                                "ACCÉDER AU STOCKAGE PHOTO",
+                                style: TextStyle(color: YrionTheme.cyanNeon, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 1.0),
                               ),
                             ),
                           ],
@@ -172,16 +205,18 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
 
                       const SizedBox(height: 30),
 
-                      /// 📝 CHAMP 1 : PSEUDONYME
-                      _buildInputLabel("NOM D'AFFICHAGE"),
+                      _buildInputLabel("NOM D'AFFICHAGE PLATFORME"),
                       _buildCyberTextField(
                         controller: _pseudoController,
-                        hint: "Ton nom ou pseudo...",
-                        icon: Icons.person_outline_rounded,
+                        hint: "Ex: Alexandre Martin",
+                        icon: Icons.badge_rounded,
                         enabled: !_estEnCoursDeChargement,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "Le nom d'affichage ne peut pas être vide";
+                            return "La matrice exige un nom d'affichage valide.";
+                          }
+                          if (value.trim().length > 30) {
+                            return "Nom trop long (Maximum 30 caractères).";
                           }
                           return null;
                         },
@@ -189,8 +224,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
 
                       const SizedBox(height: 20),
 
-                      /// 📝 CHAMP 2 : USERNAME (@)
-                      _buildInputLabel("IDENTIFIANT UNIQUE (USERNAME)"),
+                      _buildInputLabel("INDEX D'ANONYMAT (@USERNAME)"),
                       _buildCyberTextField(
                         controller: _usernameController,
                         hint: "astronaute_du_974",
@@ -198,10 +232,13 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                         enabled: !_estEnCoursDeChargement,
                         validator: (value) {
                           if (value == null || value.trim().isEmpty) {
-                            return "L'identifiant est obligatoire";
+                            return "L'identifiant unique est obligatoire pour le routage SQL.";
                           }
                           if (value.contains(' ')) {
-                            return "Pas d'espaces dans l'identifiant";
+                            return "Caractère interdit détecté : Espace.";
+                          }
+                          if (value.trim().length < 3) {
+                            return "Identifiant trop court (Minimum 3 caractères).";
                           }
                           return null;
                         },
@@ -209,22 +246,28 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
 
                       const SizedBox(height: 20),
 
-                      /// 📝 CHAMP 3 : BIO (Multi-lignes)
-                      _buildInputLabel("BIOGRAPHIE DE LA CAPSULE"),
+                      _buildInputLabel("MANIFESTE DE LA CAPSULE (BIOGRAPHIE)"),
                       _buildCyberTextField(
                         controller: _bioController,
-                        hint: "Raconte ton histoire dans l'espace Yrion...",
-                        icon: Icons.notes_rounded,
+                        hint: "Décris ta trajectoire dans l'univers Yrion...",
+                        icon: Icons.terminal_rounded,
                         enabled: !_estEnCoursDeChargement,
-                        maxLines: 3,
+                        maxLines: 4,
+                        validator: (value) {
+                          if (value != null && value.length > 160) {
+                            return "Manifeste saturé (Maximum 160 caractères).";
+                          }
+                          return null;
+                        },
                       ),
 
                       const SizedBox(height: 40),
 
-                      /// 💾 BOUTON DE SAUVEGARDE EN GRADIENT NÉON / INDICATEUR DE CHARGEMENT
+                      /// ⚡ ACTIONNEUR DE CONFIGURATION GRADIENT CYBERPUNK
                       GestureDetector(
                         onTap: _sauvegarderModifications,
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
@@ -235,12 +278,12 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                               begin: Alignment.centerLeft,
                               end: Alignment.centerRight,
                             ),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
                             boxShadow: _estEnCoursDeChargement ? [] : [
                               BoxShadow(
-                                color: YrionTheme.cyanNeon.withOpacity(0.2),
-                                blurRadius: 12,
-                                spreadRadius: 1,
+                                color: YrionTheme.cyanNeon.withOpacity(0.3),
+                                blurRadius: 16,
+                                offset: const Offset(0, 4),
                               )
                             ],
                           ),
@@ -251,21 +294,22 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       color: YrionTheme.cyanNeon,
-                                      strokeWidth: 2,
+                                      strokeWidth: 2.5,
                                     ),
                                   )
                                 : const Text(
-                                    "ENREGISTRER LES CONFIGURATIONS",
+                                    "INITIALISER LA SYNCHRONISATION CLOUD",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
-                                      letterSpacing: 0.5,
+                                      fontSize: 13,
+                                      letterSpacing: 0.8,
                                     ),
                                   ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 40),
                     ],
                   ),
                 ),
@@ -277,23 +321,21 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
     );
   }
 
-  /// Petit label au-dessus des champs de saisie
   Widget _buildInputLabel(String title) {
     return Padding(
-      padding: const EdgeInsets.only(left: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 6, bottom: 8),
       child: Text(
         title,
         style: const TextStyle(
           color: YrionTheme.textMuted,
-          fontSize: 10,
-          fontWeight: FontWeight.bold,
-          letterSpacing: 1.5,
+          fontSize: 9,
+          fontWeight: FontWeight.w800,
+          letterSpacing: 1.8,
         ),
       ),
     );
   }
 
-  /// Input de texte personnalisé Cyberpunk
   Widget _buildCyberTextField({
     required TextEditingController controller,
     required String hint,
@@ -307,61 +349,79 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
       maxLines: maxLines,
       validator: validator,
       enabled: enabled,
-      style: TextStyle(color: enabled ? Colors.white : Colors.white30, fontSize: 14),
+      style: TextStyle(
+        color: enabled ? Colors.white : Colors.white30, 
+        fontSize: 14, 
+        fontFamily: 'monospace', // Style terminal
+      ),
       cursorColor: YrionTheme.cyanNeon,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: Colors.white24, fontSize: 14),
-        prefixIcon: Icon(icon, color: YrionTheme.textLight, size: 20),
+        hintStyle: const TextStyle(color: Colors.white24, fontSize: 13),
+        prefixIcon: Icon(icon, color: enabled ? YrionTheme.cyanNeon.withOpacity(0.7) : YrionTheme.textMuted, size: 18),
         filled: true,
-        fillColor: YrionTheme.cardBackground.withOpacity(0.4),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        fillColor: YrionTheme.cardBackground.withOpacity(0.25),
+        contentPadding: const EdgeInsets.all(18),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: YrionTheme.borderNeon.withOpacity(0.6)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: YrionTheme.borderNeon.withOpacity(0.4)),
         ),
         disabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: YrionTheme.borderNeon.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(color: YrionTheme.borderNeon.withOpacity(0.1)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: YrionTheme.cyanNeon, width: 1.5),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: YrionTheme.magentaNeon),
+          borderRadius: BorderRadius.circular(14),
+          borderSide: const BorderSide(color: YrionTheme.magentaNeon, width: 1.0),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(14),
           borderSide: const BorderSide(color: YrionTheme.magentaNeon, width: 1.5),
         ),
-        errorStyle: const TextStyle(color: YrionTheme.magentaNeon, fontSize: 11),
+        errorStyle: const TextStyle(color: YrionTheme.magentaNeon, fontSize: 11, fontWeight: FontWeight.bold),
       ),
     );
   }
 
-  /// Génère l'aperçu de la photo actuelle (ou initiale) avec son halo
   Widget _buildAvatarApercu() {
+    ImageProvider? imageProvider;
+
+    if (ProfilData.avatarFichierLocal != null) {
+      imageProvider = FileImage(ProfilData.avatarFichierLocal!);
+    } else if (ProfilData.urlAvatarDistant != null && ProfilData.urlAvatarDistant!.isNotEmpty) {
+      imageProvider = NetworkImage(ProfilData.urlAvatarDistant!);
+    }
+
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
-        gradient: LinearGradient(colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon]),
+        gradient: LinearGradient(
+          colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
       ),
       child: Container(
-        padding: const EdgeInsets.all(2),
+        padding: const EdgeInsets.all(3),
         decoration: const BoxDecoration(color: YrionTheme.spaceDeep, shape: BoxShape.circle),
         child: CircleAvatar(
-          radius: 45,
+          radius: 50, // Légèrement agrandi pour valoriser l'UI High-Tech
           backgroundColor: YrionTheme.cardBackground,
-          backgroundImage: ProfilData.avatarFichierLocal != null 
-              ? FileImage(ProfilData.avatarFichierLocal!) 
-              : null,
-          child: ProfilData.avatarFichierLocal == null
+          backgroundImage: imageProvider,
+          child: imageProvider == null
               ? Text(
                   ProfilData.obtenirInitiale(),
-                  style: const TextStyle(color: YrionTheme.cyanNeon, fontSize: 32, fontWeight: FontWeight.w900),
+                  style: const TextStyle(
+                    color: YrionTheme.cyanNeon, 
+                    fontSize: 36, 
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'monospace',
+                  ),
                 )
               : null,
         ),

@@ -1,11 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http; // requis pour l'envoi Multipart vers le serveur Rust
+import 'package:image_cropper/image_cropper.dart'; // ✂️ Moteur de traitement géométrique
+import 'package:http/http.dart' as http;
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'package:nerax_yrion/theme/cyber_header.dart';
 import 'profil_data.dart';
 
+/// ====================================================================
+/// YRION SOCIAL ECOSYSTEM : COMPOSANT FLUX MULTIPART HAUT RENDEMENT
+/// PIPELINE : Acquisition -> Recadrage Circulaire Tactile -> Upload Cloud Render
+/// INTÉGRATION : Validation en base Neon et rafraîchissement asynchrone
+/// ====================================================================
 class PhotoProfilPage extends StatefulWidget {
   const PhotoProfilPage({super.key});
 
@@ -16,28 +22,67 @@ class PhotoProfilPage extends StatefulWidget {
 class _PhotoProfilPageState extends State<PhotoProfilPage> {
   final ImagePicker _picker = ImagePicker();
   File? _imageSelectionnee;
-  bool _estEnCoursDeChargement = false; // Bloque l'interface pendant l'upload réseau
+  bool _estEnCoursDeChargement = false;
 
+  /// 📸 ACQUISITION ET ISOLEMENT DU FLUX VISUEL MATÉRIEL
   Future<void> _recupererImage(ImageSource source) async {
     try {
       final XFile? fichierSelectionne = await _picker.pickImage(
         source: source,
-        maxWidth: 500,
-        maxHeight: 500,
-        imageQuality: 85, // Compression légère pour respecter les limites du serveur
+        maxWidth: 1080, // Résolution augmentée pour maximiser la marge de zoom tactile
+        maxHeight: 1080,
+        imageQuality: 90, 
       );
 
       if (fichierSelectionne != null) {
-        setState(() {
-          _imageSelectionnee = File(fichierSelectionne.path);
-        });
+        // Déclenchement automatique de la sur-couche de recadrage
+        await _recadrerImageVisuelle(fichierSelectionne.path);
       }
     } catch (e) {
-      debugPrint("Erreur d'accès matériel : $e");
+      _afficherErreur("ACCÈS IMPOSSIBLE AUX CAPTEURS MATÉRIELS DE L'APPAREIL");
     }
   }
 
-  /// 🚀 ENVOI MULTIPART VERS LE SERVEUR RUST ET ENREGISTREMENT LOCAL
+  /// ✂️ MOTEUR DE RECADRAGE ET ALIGNEMENT DYNAMIQUE TACTILE
+  Future<void> _recadrerImageVisuelle(String cheminFichier) async {
+    try {
+      final CroppedFile? fichierRecadre = await ImageCropper().cropImage(
+        sourcePath: cheminFichier,
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 85, // Compression finale calibrée pour ton serveur Axum
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: "AJUSTER LA MATRICE VISUELLE",
+            toolbarColor: YrionTheme.spaceDeep,
+            toolbarWidgetColor: Colors.white,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true, // Force le format carré pour un rendu circulaire parfait
+            activeControlsWidgetColor: YrionTheme.cyanNeon,
+            backgroundColor: YrionTheme.spaceDeep,
+            cropFrameColor: YrionTheme.cyanNeon,
+            cropGridColor: YrionTheme.borderNeon.withOpacity(0.5),
+          ),
+          IOSUiSettings(
+            title: "AJUSTER LE LOGO",
+            cancelButtonTitle: "Annuler",
+            doneButtonTitle: "Valider",
+            aspectRatioLockEnabled: true,
+            resetAspectRatioEnabled: false,
+          ),
+        ],
+      );
+
+      if (fichierRecadre != null) {
+        setState(() {
+          _imageSelectionnee = File(fichierRecadre.path);
+        });
+      }
+    } catch (e) {
+      _afficherErreur("ÉCHEC DU TRAITEMENT GÉOMÉTRIQUE DE L'IMAGE");
+    }
+  }
+
+  /// 🚀 ENVOI STREAM MULTIPART VERS TON SERVEUR PRODUCTION RENDER
   Future<void> _sauvegarderEtQuitter() async {
     if (_imageSelectionnee == null || _estEnCoursDeChargement) return;
 
@@ -46,49 +91,49 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
     });
 
     try {
-      // 🌐 URL de ton endpoint Axum dédié aux avatars
-      final url = Uri.parse('http://10.0.2.2:8080/remplacer_avatar'); // 10.0.2.2 = localhost sur émulateur Android
-
-      // 📦 Préparation de la requête multipart (format requis pour envoyer des fichiers physiques)
+      final url = Uri.parse('https://yrion-backend-profil.onrender.com/remplacer_avatar');
       final requete = http.MultipartRequest('POST', url);
 
-      // 🔑 Ajout des champs textuels nécessaires pour que le serveur sache à qui appartient l'image
-      requete.fields['email'] = ProfilData.email;
+      // Transmission des identifiants et clés de routage Neon
+      requete.fields['user_id'] = ProfilData.userId;
 
-      // 🖼️ Ajout du fichier image réel
       final fluxFichier = await http.MultipartFile.fromPath(
-        'avatar', // Cette clé DOIT correspondre au champ attendu par ton extracteur Multipart côté Rust
+        'avatar', 
         _imageSelectionnee!.path,
       );
       requete.files.add(fluxFichier);
 
-      // 🛫 Expédition du paquet vers le serveur
       final reponseEnvoi = await requete.send();
       final reponse = await http.Response.fromStream(reponseEnvoi);
 
-      // 🚦 Analyse de la réponse du serveur Axum
       if (reponse.statusCode == 200) {
-        // Le serveur a bien enregistré le fichier, on applique le changement dans le cache local
-        ProfilData.mettreAJourAvatar(_imageSelectionnee!);
+        ProfilData.mettreAJourAvatarLocal(_imageSelectionnee!);
 
         if (!mounted) return;
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: YrionTheme.cyanNeon,
-            content: Text(
-              "CAPTEUR VISUEL SYNCHRONISÉ", 
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+            behavior: SnackBarBehavior.floating,
+            content: Row(
+              children: [
+                Icon(Icons.gpp_good_rounded, color: Colors.black),
+                SizedBox(width: 12),
+                Text(
+                  "MATRICE VISUELLE ENREGISTRÉE DANS LE CLUSTER", 
+                  style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+              ],
             ),
           ),
         );
 
-        Navigator.pop(context); // Retour
+        Navigator.pop(context); 
       } else {
-        _afficherErreur("ERREUR SERVEUR : CODE ${reponse.statusCode}");
+        _afficherErreur("REJET DU FICHIER PAR LE CLUSTER : CODE ${reponse.statusCode}");
       }
     } catch (e) {
-      _afficherErreur("ERREUR RÉSEAU : TRANSMISSION DE L'IMAGE IMPOSSIBLE");
+      _afficherErreur("RUPTURE DE LIAISON : TRANSMISSION DE L'IMAGE IMPOSSIBLE");
     } finally {
       if (mounted) {
         setState(() {
@@ -102,9 +147,19 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         backgroundColor: YrionTheme.magentaNeon,
-        content: Text(
-          message,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        content: Row(
+          children: [
+            const Icon(Icons.wifi_off_rounded, color: Colors.white),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -112,12 +167,13 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Sélection de la source de l'image pour le grand aperçu
     ImageProvider? imageAffichee;
     if (_imageSelectionnee != null) {
       imageAffichee = FileImage(_imageSelectionnee!);
     } else if (ProfilData.avatarFichierLocal != null) {
       imageAffichee = FileImage(ProfilData.avatarFichierLocal!);
+    } else if (ProfilData.urlAvatarDistant != null && ProfilData.urlAvatarDistant!.isNotEmpty) {
+      imageAffichee = NetworkImage(ProfilData.urlAvatarDistant!);
     }
 
     return Scaffold(
@@ -134,35 +190,54 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      "MODIFIER LE LOGO D'IDENTITÉ",
-                      style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5),
+                      "CONFIGURER LA SIGNATURE VISUELLE",
+                      style: TextStyle(
+                        color: Colors.white, 
+                        fontSize: 13, 
+                        fontWeight: FontWeight.bold, 
+                        letterSpacing: 2.0,
+                        fontFamily: 'monospace',
+                      ),
                     ),
                     const SizedBox(height: 40),
 
-                    /// 👤 APERÇU SÉCURISÉ
+                    /// 👤 APERÇU RADIAL CYBERPUNK
                     Container(
                       padding: const EdgeInsets.all(4),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        gradient: LinearGradient(colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon]),
+                        gradient: LinearGradient(
+                          colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
                         boxShadow: [
-                          BoxShadow(color: YrionTheme.cyanNeon, blurRadius: 20, spreadRadius: 2)
+                          BoxShadow(color: YrionTheme.cyanNeon, blurRadius: 25, spreadRadius: 1)
                         ],
                       ),
-                      child: CircleAvatar(
-                        radius: 80,
-                        backgroundColor: YrionTheme.cardBackground,
-                        backgroundImage: imageAffichee,
-                        child: imageAffichee == null
-                            ? Text(
-                                ProfilData.obtenirInitiale(),
-                                style: const TextStyle(color: YrionTheme.cyanNeon, fontSize: 54, fontWeight: FontWeight.w900),
-                              )
-                            : null,
+                      child: Container(
+                        padding: const EdgeInsets.all(3),
+                        decoration: const BoxDecoration(color: YrionTheme.spaceDeep, shape: BoxShape.circle),
+                        child: CircleAvatar(
+                          radius: 85,
+                          backgroundColor: YrionTheme.cardBackground,
+                          backgroundImage: imageAffichee,
+                          child: imageAffichee == null
+                              ? Text(
+                                  ProfilData.obtenirInitiale(),
+                                  style: const TextStyle(
+                                    color: YrionTheme.cyanNeon, 
+                                    fontSize: 58, 
+                                    fontWeight: FontWeight.w900,
+                                    fontFamily: 'monospace',
+                                  ),
+                                )
+                              : null,
+                        ),
                       ),
                     ),
 
-                    const SizedBox(height: 50),
+                    const SizedBox(height: 60),
 
                     GestureDetector(
                       onTap: _estEnCoursDeChargement ? null : () => _afficherMenuChoix(context),
@@ -170,14 +245,19 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         decoration: BoxDecoration(
-                          color: YrionTheme.cardBackground,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: YrionTheme.cyanNeon.withOpacity(0.6)),
+                          color: YrionTheme.cardBackground.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: YrionTheme.cyanNeon.withOpacity(0.5), width: 1.2),
                         ),
                         child: const Center(
                           child: Text(
-                            "CHOISIR UNE SOURCE",
-                            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, letterSpacing: 1.0),
+                            "ACCÉDER AUX CAPTEURS D'IMAGES",
+                            style: TextStyle(
+                              color: YrionTheme.cyanNeon, 
+                              fontWeight: FontWeight.bold, 
+                              letterSpacing: 1.0,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
@@ -188,14 +268,22 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                     if (_imageSelectionnee != null)
                       GestureDetector(
                         onTap: _sauvegarderEtQuitter,
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           decoration: BoxDecoration(
                             gradient: _estEnCoursDeChargement
                                 ? LinearGradient(colors: [Colors.grey.shade800, Colors.grey.shade900])
                                 : const LinearGradient(colors: [YrionTheme.cyanNeon, YrionTheme.magentaNeon]),
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: _estEnCoursDeChargement ? [] : [
+                              BoxShadow(
+                                color: YrionTheme.magentaNeon.withOpacity(0.3),
+                                blurRadius: 15,
+                                offset: const Offset(0, 4),
+                              )
+                            ],
                           ),
                           child: Center(
                             child: _estEnCoursDeChargement
@@ -203,13 +291,18 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                      color: Colors.black,
-                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
                                     ),
                                   )
                                 : const Text(
-                                    "APPLIQUER LA NOUVELLE IMAGE",
-                                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                    "DEPLOYER L'IMAGE EN PRODUCTION",
+                                    style: TextStyle(
+                                      color: Colors.white, 
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                      letterSpacing: 0.5,
+                                    ),
                                   ),
                           ),
                         ),
@@ -227,33 +320,33 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
   void _afficherMenuChoix(BuildContext context) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: YrionTheme.cardBackground,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+      backgroundColor: YrionTheme.spaceDeep,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
       builder: (BuildContext context) {
         return SafeArea(
           child: Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 40,
+                  width: 50,
                   height: 4,
-                  decoration: BoxDecoration(color: YrionTheme.borderNeon, borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(color: YrionTheme.borderNeon.withOpacity(0.5), borderRadius: BorderRadius.circular(10)),
                 ),
                 const SizedBox(height: 24),
                 ListTile(
                   leading: const Icon(Icons.photo_library_rounded, color: YrionTheme.cyanNeon),
-                  title: const Text("Ouvrir la Galerie", style: TextStyle(color: Colors.white)),
+                  title: const Text("Ouvrir la Galerie Locale", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
                   onTap: () {
                     Navigator.pop(context);
                     _recupererImage(ImageSource.gallery);
                   },
                 ),
-                Divider(color: YrionTheme.borderNeon.withOpacity(0.4)),
+                Divider(color: YrionTheme.borderNeon.withOpacity(0.2)),
                 ListTile(
                   leading: const Icon(Icons.camera_enhance_rounded, color: YrionTheme.magentaNeon),
-                  title: const Text("Déclencher l'Appareil Photo", style: TextStyle(color: Colors.white)),
+                  title: const Text("Déclencher l'Appareil Matériel", style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
                   onTap: () {
                     Navigator.pop(context);
                     _recupererImage(ImageSource.camera);
