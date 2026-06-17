@@ -11,6 +11,7 @@ import 'profil_data.dart';
 /// YRION SOCIAL ECOSYSTEM : COMPOSANT FLUX MULTIPART HAUT RENDEMENT
 /// PIPELINE : Acquisition -> Recadrage Circulaire Tactile -> Upload Cloud Render
 /// INTÉGRATION : Validation en base Neon et rafraîchissement asynchrone
+/// RESILIENCE : Gestion native des pertes de processus Android (Low Memory)
 /// ====================================================================
 class PhotoProfilPage extends StatefulWidget {
   const PhotoProfilPage({super.key});
@@ -23,9 +24,41 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
   final ImagePicker _picker = ImagePicker();
   File? _imageSelectionnee;
   bool _estEnCoursDeChargement = false;
+  
+  // VERROU ANTI-CRASH ULTRA-STRICT : empêche le double traitement de la galerie native
+  bool _capteurEnCoursDUtilisation = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // 🛡️ Récupération des données perdues au cas où Android aurait tué le processus en arrière-plan
+    _recupererDonneesPerdues();
+  }
+
+  /// 🛡️ ANCRAGE ET RESTAURATION DU CYCLE DE VIE (Anti-Crash Low Memory)
+  Future<void> _recupererDonneesPerdues() async {
+    if (!Platform.isAndroid) return;
+    
+    try {
+      final LostDataResponse reponsePerdue = await _picker.retrieveLostData();
+      if (reponsePerdue.isEmpty || reponsePerdue.file == null) return;
+
+      // Si une image a été interceptée avant le crash système, on reprend le flux directement
+      await _recadrerImageVisuelle(reponsePerdue.file!.path);
+    } catch (e) {
+      debugPrint("Echec de la restauration du flux visuel : $e");
+    }
+  }
 
   /// 📸 ACQUISITION ET ISOLEMENT DU FLUX VISUEL MATÉRIEL
   Future<void> _recupererImage(ImageSource source) async {
+    // Si le capteur tourne déjà, on détruit la requête concurrente immédiatement
+    if (_capteurEnCoursDUtilisation) return;
+
+    setState(() {
+      _capteurEnCoursDUtilisation = true;
+    });
+
     try {
       final XFile? fichierSelectionne = await _picker.pickImage(
         source: source,
@@ -34,12 +67,22 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
         imageQuality: 90, 
       );
 
-      if (fichierSelectionne != null) {
-        // Déclenchement automatique de la sur-couche de recadrage
-        await _recadrerImageVisuelle(fichierSelectionne.path);
+      // Sécurité absolue : si l'utilisateur quitte sans choisir d'image, on libère le verrou
+      if (fichierSelectionne == null) {
+        setState(() {
+          _capteurEnCoursDUtilisation = false;
+        });
+        return;
       }
+
+      // Transmission sécurisée vers le découpeur géométrique
+      await _recadrerImageVisuelle(fichierSelectionne.path);
+
     } catch (e) {
       _afficherErreur("ACCÈS IMPOSSIBLE AUX CAPTEURS MATÉRIELS DE L'APPAREIL");
+      setState(() {
+        _capteurEnCoursDUtilisation = false;
+      });
     }
   }
 
@@ -72,6 +115,8 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
         ],
       );
 
+      if (!mounted) return;
+
       if (fichierRecadre != null) {
         setState(() {
           _imageSelectionnee = File(fichierRecadre.path);
@@ -79,6 +124,13 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
       }
     } catch (e) {
       _afficherErreur("ÉCHEC DU TRAITEMENT GÉOMÉTRIQUE DE L'IMAGE");
+    } finally {
+      // Libération totale des verrous une fois l'intégralité du cycle terminé
+      if (mounted) {
+        setState(() {
+          _capteurEnCoursDUtilisation = false;
+        });
+      }
     }
   }
 
@@ -240,7 +292,9 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                     const SizedBox(height: 60),
 
                     GestureDetector(
-                      onTap: _estEnCoursDeChargement ? null : () => _afficherMenuChoix(context),
+                      onTap: (_estEnCoursDeChargement || _capteurEnCoursDUtilisation) 
+                          ? null 
+                          : () => _afficherMenuChoix(context),
                       child: Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -249,10 +303,10 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(color: YrionTheme.cyanNeon.withOpacity(0.5), width: 1.2),
                         ),
-                        child: const Center(
+                        child: Center(
                           child: Text(
-                            "ACCÉDER AUX CAPTEURS D'IMAGES",
-                            style: TextStyle(
+                            _capteurEnCoursDUtilisation ? "INITIALISATION..." : "ACCÉDER AUX CAPTEURS D'IMAGES",
+                            style: const TextStyle(
                               color: YrionTheme.cyanNeon, 
                               fontWeight: FontWeight.bold, 
                               letterSpacing: 1.0,
@@ -267,7 +321,7 @@ class _PhotoProfilPageState extends State<PhotoProfilPage> {
 
                     if (_imageSelectionnee != null)
                       GestureDetector(
-                        onTap: _sauvegarderEtQuitter,
+                        onTap: _estEnCoursDeChargement ? null : _sauvegarderEtQuitter,
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           width: double.infinity,

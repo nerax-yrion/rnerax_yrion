@@ -21,6 +21,9 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
   final _formKey = GlobalKey<FormState>();
   bool _estEnCoursDeChargement = false;
   
+  // VERROU ANTI-FLOOD CRUCIAL : Bloque les doubles ouvertures de la galerie native
+  bool _gestionnaireSelecteurBloque = false;
+  
   // Instance unique de notre passerelle asynchrone haut rendement
   final AuthServiceProfil _authServiceProfil = AuthServiceProfil();
 
@@ -95,7 +98,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                 SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "MATRICE D'IDENTITÉ SYNCHRONISÉE SUR NEON SQL", 
+                    "MATRICE D'IDENTITÉ SYNCHRONISÉE ON NEON SQL", 
                     style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, letterSpacing: 0.5),
                   ),
                 ),
@@ -115,7 +118,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
         _afficherErreur("REJET DES CONFIGURATIONS PAR LE NOYAU RUST (VÉRIFIE TES ENTRÉES)");
       }
     } catch (erreurReseau) {
-      // 🔄 ROLLBACK : Coupoure réseau ou crash cloud, protection des données locales
+      // 🔄 ROLLBACK : Coupure réseau ou crash cloud, protection des données locales
       ProfilData.mettreAJourIdentite(
         nouveauPseudo: ancienPseudo,
         nouveauUsername: ancienUsername,
@@ -184,15 +187,26 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
                             ),
                             const SizedBox(height: 12),
                             TextButton.icon(
-                              onPressed: _estEnCoursDeChargement ? null : () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => const PhotoProfilPage()),
-                                ).then((_) {
-                                  // Forçage du re-render pour capturer instantanément l'avatar local modifié
-                                  setState(() {});
-                                });
-                              },
+                              onPressed: (_estEnCoursDeChargement || _gestionnaireSelecteurBloque) 
+                                ? null 
+                                : () async {
+                                    // Verrouillage matériel instantané du bouton pour détruire l'erreur 'Reply already submitted'
+                                    setState(() {
+                                      _gestionnaireSelecteurBloque = true;
+                                    });
+
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const PhotoProfilPage()),
+                                    );
+
+                                    // Libération contrôlée après fermeture complète de l'activité Android native
+                                    if (mounted) {
+                                      setState(() {
+                                        _gestionnaireSelecteurBloque = false;
+                                      });
+                                    }
+                                  },
                               icon: const Icon(Icons.add_photo_alternate_rounded, color: YrionTheme.cyanNeon, size: 18),
                               label: const Text(
                                 "ACCÉDER AU STOCKAGE PHOTO",
@@ -352,7 +366,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
       style: TextStyle(
         color: enabled ? Colors.white : Colors.white30, 
         fontSize: 14, 
-        fontFamily: 'monospace', // Style terminal
+        fontFamily: 'monospace',
       ),
       cursorColor: YrionTheme.cyanNeon,
       decoration: InputDecoration(
@@ -410,7 +424,7 @@ class _ModifierProfilPageState extends State<ModifierProfilPage> {
         padding: const EdgeInsets.all(3),
         decoration: const BoxDecoration(color: YrionTheme.spaceDeep, shape: BoxShape.circle),
         child: CircleAvatar(
-          radius: 50, // Légèrement agrandi pour valoriser l'UI High-Tech
+          radius: 50, 
           backgroundColor: YrionTheme.cardBackground,
           backgroundImage: imageProvider,
           child: imageProvider == null
