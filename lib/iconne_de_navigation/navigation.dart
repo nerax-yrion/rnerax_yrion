@@ -5,6 +5,7 @@ import 'package:nerax_yrion/parametre/parametre.dart';
 import 'package:nerax_yrion/partie splite/create_split_page.dart'; 
 import 'package:nerax_yrion/profil/profil_data.dart'; // 🧬 Liaison avec ton cache centralisé Rust/Neon
 import 'package:nerax_yrion/theme/yrion_theme.dart';
+import '../message/chat_list_view.dart'; // 💬 Importation de ton tout nouveau hub de messagerie temps réel
 
 class NavigationPage extends StatefulWidget {
   const NavigationPage({super.key});
@@ -16,11 +17,12 @@ class NavigationPage extends StatefulWidget {
 class _NavigationPageState extends State<NavigationPage> {
   int _currentIndex = 0;
 
-  // Intégration complète de tes pages officielles
+  // Intégration complète de tes pages officielles (Messages inséré à l'index 1)
   final List<Widget> _pages = [
     const AccueilPage(),
-    const ProfilPage(),
-    const ParametresPage(),
+    const ChatListView(), // Index 1 : Ton orbite 3D et tes discussions Neon SQL
+    const ProfilPage(),   // Index 2
+    const ParametresPage(), // Index 3
   ];
 
   void _openCreateSplitOverlay() {
@@ -76,7 +78,7 @@ class _NavigationPageState extends State<NavigationPage> {
         ],
       ),
 
-      /// 3. LA BARRE DE NAVIGATION STYLE PREMIUM STARTUP
+      /// 3. LA BARRE DE NAVIGATION STYLE PREMIUM STARTUP RE-CALIBRÉE
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF070512),
@@ -95,15 +97,22 @@ class _NavigationPageState extends State<NavigationPage> {
                   activeIcon: Icons.grid_view_rounded,
                 ),
 
-                // 👤 ONGLET : PROFIL UTILISATEUR DYNAMIQUE STYLE INSTA (Index 1)
-                _buildProfileNavItem(index: 1),
+                // 💬 ONGLET : MESSAGES (Index 1) - Intégré à gauche du bouton central
+                _buildNavItem(
+                  index: 1,
+                  icon: Icons.chat_bubble_outline_rounded,
+                  activeIcon: Icons.chat_bubble_rounded,
+                ),
 
                 // 🎯 ZONE MORTE VISUELLE POUR ACCUEILLIR LE BOUTON FLOTTANT CENTRÉ "+"
                 const SizedBox(width: 56),
 
-                // ⚙️ ONGLET : PARAMÈTRES (Index 2)
+                // 👤 ONGLET : PROFIL UTILISATEUR DYNAMIQUE STYLE INSTA (Index 2 - décalé d'un cran)
+                _buildProfileNavItem(index: 2),
+
+                // ⚙️ ONGLET : PARAMÈTRES (Index 3 - décalé d'un cran)
                 _buildNavItem(
-                  index: 2,
+                  index: 3,
                   icon: Icons.settings_rounded,
                   activeIcon: Icons.settings_rounded,
                 ),
