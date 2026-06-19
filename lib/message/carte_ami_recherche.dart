@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'chat_user_model.dart';
-import 'chat_room_page.dart';
+import '../systeme_de_compte/compte_publique.dart';
+import '../systeme_de_compte/compte_prive.dart';
 
 class CarteAmiRecherche extends StatelessWidget {
   final ChatUser user;
@@ -26,42 +27,35 @@ class CarteAmiRecherche extends StatelessWidget {
       ),
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        leading: Stack(
-          alignment: Alignment.center,
-          children: [
-            CircleAvatar(
-              radius: 20,
-              backgroundColor: Colors.white10,
-              backgroundImage: user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
-              child: user.avatarUrl == null
-                  ? Text(user.pseudo[0].toUpperCase(), style: const TextStyle(color: YrionTheme.cyanNeon, fontWeight: FontWeight.bold))
-                  : null,
-            ),
-            if (user.enLigne)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: Container(
-                  width: 10,
-                  height: 10,
-                  decoration: BoxDecoration(
-                    color: Colors.greenAccent,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: const Color(0xFF070512), width: 1.5),
-                  ),
-                ),
-              ),
-          ],
+        // L'avatar est désormais épuré, sans aucun badge de statut en ligne
+        leading: CircleAvatar(
+          radius: 20,
+          backgroundColor: Colors.white10,
+          backgroundImage: user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
+          child: user.avatarUrl == null
+              ? Text(
+                  user.pseudo[0].toUpperCase(), 
+                  style: const TextStyle(color: YrionTheme.cyanNeon, fontWeight: FontWeight.bold),
+                )
+              : null,
         ),
         title: _buildHighlightedText(user.pseudo, queryText, isTitle: true),
         subtitle: _buildHighlightedText("@${user.username}", queryText, isTitle: false),
-        trailing: Icon(Icons.chevron_right_rounded, color: Colors.white.withOpacity(0.25)),
+        // Petite croix discrète pour l'historique, comme sur ton exemple
+        trailing: Icon(
+          Icons.close_rounded, 
+          color: Colors.white.withOpacity(0.2), 
+          size: 16,
+        ),
         onTap: () {
-          onTapCard(); // Déclenche la sauvegarde de l'historique dans le parent
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChatRoomPage(destinataire: user)),
-          );
+          onTapCard(); // Sauvegarde locale de la recherche récente
+
+          // Aiguillage intelligent selon la confidentialité du compte ciblé
+          if (user.statutConfidentialite == 'public') {
+            ComptePublic.ouvrirDiscussionDirecte(context, user);
+          } else {
+            ComptePrive.gererAccesPrive(context, user);
+          }
         },
       ),
     );

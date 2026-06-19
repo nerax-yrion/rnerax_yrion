@@ -4,6 +4,8 @@ class ChatUser {
   final String pseudo;
   final String? avatarUrl;
   final bool enLigne;
+  // 🛡️ Le nouveau champ pour le système de compte public/privé
+  final String statutConfidentialite;
 
   ChatUser({
     required this.id,
@@ -11,6 +13,8 @@ class ChatUser {
     required this.pseudo,
     this.avatarUrl,
     required this.enLigne,
+    // 🛡️ Initialisé à 'public' par défaut si non spécifié
+    this.statutConfidentialite = 'public',
   });
 
   factory ChatUser.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class ChatUser {
       pseudo: json['pseudo'] ?? '',
       avatarUrl: json['avatar_url'],
       enLigne: json['en_ligne'] ?? false,
+      // 🛡️ Récupération sécurisée depuis le JSON de ton API
+      statutConfidentialite: json['statut_confidentialite'] ?? 'public',
     );
   }
 
@@ -29,5 +35,7 @@ class ChatUser {
     'pseudo': pseudo,
     'avatar_url': avatarUrl,
     'en_ligne': enLigne,
+    // 🛡️ Inclus dans le JSON pour les requêtes de mise à jour
+    'statut_confidentialite': statutConfidentialite,
   };
 }
