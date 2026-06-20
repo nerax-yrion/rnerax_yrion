@@ -5,9 +5,15 @@ import 'package:nerax_yrion/partie connexion et inscription/connexion/connexion.
 import 'package:nerax_yrion/partie connexion et inscription/inscription/inscription.dart';
 import 'package:nerax_yrion/iconne_de_navigation/navigation.dart';
 
+// 📡 LE CERVEAU RÉSEAU SPATIAL
+import 'chat/panne_connexion/gestionnaire_signal_spatial.dart';
+
 void main() {
-  // On initialise l'application directement sans bloquer sur le service d'authentification
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // 🛸 INITIALISATION : On allume le scanner de réseau spatial YO !
+  GestionnaireSignalSpatial().initialiserSurveillance();
+  
   runApp(const YrionApp());
 }
 
@@ -72,7 +78,6 @@ class _SessionSplasherState extends State<SessionSplasher> {
     // On planifie la redirection juste après le premier rendu visuel
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Par sécurité visuelle, si le token n'est pas géré ici, on ouvre ton magnifique écran de connexion
-      // Tu pourras lier ton bouton de connexion directement à ton système plus tard
       if (mounted) {
         Navigator.pushReplacementNamed(context, '/connexion');
       }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../profil/profil_data.dart';
 // 🛠️ IMPORTATION CORRIGÉE : On va chercher ton fichier d'heure "chat_time.dart"
-import '../chat_time.dart';
+import 'chat_time.dart';
 
 /// 🎨 **LE COMPOSANT BULLE DE MESSAGE**
 /// Ce fichier s'occupe UNIQUE-MENT de dessiner la forme de la bulle,

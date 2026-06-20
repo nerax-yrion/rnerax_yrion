@@ -25,6 +25,9 @@ dependencies:
 
   # 🎬 CRITIQUE : Requis pour le streaming des Splits vidéos des utilisateurs
   video_player: ^2.8.6
+  record: ^6.0.0
+  path_provider: ^2.1.6
+  connectivity_plus: ^7.1.1
 
 dev_dependencies:
   flutter_test:
