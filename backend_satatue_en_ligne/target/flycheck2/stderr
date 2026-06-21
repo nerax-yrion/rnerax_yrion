@@ -1,0 +1,17 @@
+    Updating crates.io index
+error: failed to get `axum` as a dependency of package `serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne)`
+
+Caused by:
+  failed to load source for dependency `axum`
+
+Caused by:
+  unable to update registry `crates-io`
+
+Caused by:
+  download of ax/um/axum failed
+
+Caused by:
+  curl failed
+
+Caused by:
+  [28] Timeout was reached (Operation too slow. Less than 10 bytes/sec transferred the last 30 seconds)
