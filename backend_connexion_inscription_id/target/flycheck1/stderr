@@ -1,5 +1,4 @@
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 39.36s
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 6.35s
