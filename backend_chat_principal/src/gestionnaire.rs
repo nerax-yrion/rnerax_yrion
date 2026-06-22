@@ -1,23 +1,29 @@
 use axum::{extract::ws::{Message, WebSocket, WebSocketUpgrade}, extract::State, response::IntoResponse};
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use tokio::sync::mpsc;
+use std::sync::Arc;
+use tokio::sync::RwLock;
 
 use crate::protocole::PaquetYrion;
-use crate::registre::RegistrePartage;
+use crate::registre::StationCentrale; // Utilisation directe de ta structure
 use crate::securite::assainir_identifiant;
 
-// Importation de nos 5 micro-moteurs indépendants
-mod message_normal;
-mod modifier_message;
-mod message_vocal;
-mod appel_normal;
-mod appel_video;
+// Importation propre de tes 5 micro-moteurs indépendants
+use crate::message_normal;
+use crate::modifier_message;
+use crate::message_vocal;
+use crate::appel_normal;
+use crate::appel_video;
 
-pub async fn point_entree_liaison(ws: WebSocketUpgrade, State(registre): State<RegistrePartage>) -> impl IntoResponse {
+// Extraction propre de l'état avec le type explicite partagé avec main.rs
+pub async fn point_entree_liaison(
+    ws: WebSocketUpgrade, 
+    State(registre): State<Arc<RwLock<StationCentrale>>>
+) -> impl IntoResponse {
     ws.on_upgrade(move |socket| traiter_pipeline(socket, registre))
 }
 
-async fn traiter_pipeline(socket: WebSocket, registre: RegistrePartage) {
+async fn traiter_pipeline(socket: WebSocket, registre: Arc<RwLock<StationCentrale>>) {
     let (mut expediteur_ws, mut recepteur_ws) = socket.split();
     let (tx, mut rx) = mpsc::unbounded_channel();
 
