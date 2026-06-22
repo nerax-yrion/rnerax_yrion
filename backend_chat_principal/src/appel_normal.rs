@@ -8,3 +8,5 @@ pub async fn gerer_appel_audio(
     let paquet = PaquetYrion::AppelNormal { emetteur_id: emetteur, recepteur_id: recepteur.clone(), etape, sdp };
     envoyer_direct(registre, &recepteur, &paquet).await;
 }
+
+//mise a jour 1

@@ -81,3 +81,5 @@ async fn traiter_pipeline(socket: WebSocket, registre: Arc<RwLock<StationCentral
         memoire.terminaux.remove(&user_id);
     }
 }
+
+//mise ajour 1

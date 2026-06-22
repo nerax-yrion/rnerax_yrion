@@ -21,3 +21,5 @@ pub async fn gerer_texte(
         let _ = tx.send(Message::Text(serde_json::to_string(&confirmation).unwrap()));
     }
 }
+
+//mmise ajour 1

@@ -78,3 +78,5 @@ pub fn valider_texte(contenu: &str) -> Option<String> {
     }
     Some(contenu.to_string())
 }
+
+//mmise ajour 1
