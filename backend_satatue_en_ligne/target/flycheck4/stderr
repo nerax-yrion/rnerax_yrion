@@ -2,8 +2,8 @@
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
-   4.170061939s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint: fingerprint error for serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne)/Check { test: false }/TargetInner { name: "serveur_presence_yrion", doc: true, ..: with_path("/home/Shamil/nerax_yrion/backend_satatue_en_ligne/src/main.rs", Edition2021) }
-   4.172028190s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/backend_satatue_en_ligne/target/debug/.fingerprint/serveur_presence_yrion-725c599ce0683c6a/bin-serveur_presence_yrion`
+   3.368958698s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint: fingerprint error for serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne)/Check { test: false }/TargetInner { name: "serveur_presence_yrion", doc: true, ..: with_path("/home/Shamil/nerax_yrion/backend_satatue_en_ligne/src/main.rs", Edition2021) }
+   3.369275269s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/backend_satatue_en_ligne/target/debug/.fingerprint/serveur_presence_yrion-725c599ce0683c6a/bin-serveur_presence_yrion`
 
 Caused by:
     No such file or directory (os error 2)
@@ -45,8 +45,8 @@ Stack backtrace:
   24: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   25: <unknown>
-   5.577763712s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint: fingerprint error for serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne)/Check { test: true }/TargetInner { name: "serveur_presence_yrion", doc: true, ..: with_path("/home/Shamil/nerax_yrion/backend_satatue_en_ligne/src/main.rs", Edition2021) }
-   5.577810646s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/backend_satatue_en_ligne/target/debug/.fingerprint/serveur_presence_yrion-dd310543a57686a0/test-bin-serveur_presence_yrion`
+   4.892950585s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint: fingerprint error for serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne)/Check { test: true }/TargetInner { name: "serveur_presence_yrion", doc: true, ..: with_path("/home/Shamil/nerax_yrion/backend_satatue_en_ligne/src/main.rs", Edition2021) }
+   4.893101852s  INFO prepare_target{force=false package_id=serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne) target="serveur_presence_yrion"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/backend_satatue_en_ligne/target/debug/.fingerprint/serveur_presence_yrion-dd310543a57686a0/test-bin-serveur_presence_yrion`
 
 Caused by:
     No such file or directory (os error 2)
@@ -89,6 +89,6 @@ Stack backtrace:
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   25: <unknown>
     Checking serveur_presence_yrion v2.0.0 (/home/Shamil/nerax_yrion/backend_satatue_en_ligne)
-error: could not compile `serveur_presence_yrion` (bin "serveur_presence_yrion" test) due to 2 previous errors
-warning: build failed, waiting for other jobs to finish...
 error: could not compile `serveur_presence_yrion` (bin "serveur_presence_yrion") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `serveur_presence_yrion` (bin "serveur_presence_yrion" test) due to 2 previous errors
