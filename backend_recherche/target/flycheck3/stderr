@@ -1,6 +1,8 @@
+    Blocking waiting for file lock on package cache
+    Updating crates.io index
 error: failed to select a version for `tower-http`.
     ... required by package `yrion_recherche_imprenable v4.0.0 (/home/Shamil/nerax_yrion/backend_recherche)`
-versions that meet the requirements `^0.5` (locked to 0.5.2) are: 0.5.2
+versions that meet the requirements `^0.5` are: 0.5.2, 0.5.1, 0.5.0
 
 package `yrion_recherche_imprenable` depends on `tower-http` with feature `compression` but `tower-http` does not have that feature.
 help: there is a feature `compression-br` with a similar name

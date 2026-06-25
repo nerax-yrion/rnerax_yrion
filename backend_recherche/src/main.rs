@@ -27,6 +27,25 @@ async fn page_accueil() -> Html<&'static str> {
 
 #[tokio::main]
 async fn main() {
+    // ⚡ 1. RÉCUPÉRATION SÉCURISÉE DE L'URL DE LA BASE DE DONNÉES NEON
+    let url_database = std::env::var("DATABASE_URL")
+        .unwrap_or_else(|_| "postgres://user:password@localhost/dbname".to_string());
+
+    // ⚡ 2. INITIALISATION ET CONNEXION AU POOL NEON POSTGRESQL
+    println!("[SYSTEME] Connexion à la forteresse de données Neon...");
+    let pool_neon = sqlx::PgPool::connect(&url_database)
+        .await
+        .expect("Impossible de se connecter à la base de données Neon");
+
+    // 🚀 3. DÉCLENCHEMENT DE LA MIGRATION QUANTIQUE SANS COMPROMIS
+    println!("[SYSTEME] Déploiement des indexations d'élite (Dossier ./migrations)...");
+    sqlx::migrate!("./migrations")
+        .run(&pool_neon)
+        .await
+        .expect("Échec critique lors du déploiement de la migration sur Neon");
+        
+    println!("[SYSTEME] Base de données Neon synchronisée et indexée avec succès !");
+
     // 🛡️ ALLOCATION MÉMOIRE PRÉ-CALCULÉE INDUSTRIELLE
     let base_donnees_recherche = Arc::new(RwLock::new(CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
 
@@ -65,6 +84,7 @@ async fn main() {
 }
 
 /// 🛑 INTERCEPTEUR DE SIGNAL DE FIN DE VIE DU SERVEUR
+/// Permet de vider la mémoire et de fermer proprement les sockets Web lorsque Render redémarre l'application.
 async fn attendre_signal_extinction() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
@@ -89,4 +109,4 @@ async fn attendre_signal_extinction() {
     }
 } 
 
-// mise ajour du main.rs niveau 1 
+// mise a jour niveau 2
