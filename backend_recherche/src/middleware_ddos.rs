@@ -4,23 +4,27 @@ use axum::{
     extract::Request,
     http::StatusCode,
 };
-use tower::Service;
+use tower::Layer;   
+use tower::Service; 
 use crate::securite::bouclier_anti_ddos;
 
 /// 🚀 ENVELOPPE CLONABLE PERFORMANCE MAXIMALE
 /// Intercepte, applique la régulation de trafic du bouclier, et transmet au routeur.
 pub async fn appliquer_protection_ddos(request: Request, next: Next) -> Result<Response, StatusCode> {
-    let mut limiteur = bouclier_anti_ddos();
+    let limiteur = bouclier_anti_ddos();
     
     // Encapsulation légère de la suite du pipeline Axum
     let service_interne = tower::service_fn(|req: Request| async move {
         Ok::<Response, std::convert::Infallible>(next.run(req).await)
     });
     
-    let mut service_ordonnance = limiteur.call(service_interne);
+    // Correction de la tuyauterie : Le layer enveloppe le service interne
+    let mut service_ordonnance = limiteur.layer(service_interne);
     
-    match service_ordonnance.call(request).await {
-        Ok(reponse) => Ok(reponse),
-        Err(_) => Err(StatusCode::TOO_MANY_REQUESTS),
+    // Remplacement du match par un if let pour contourner définitivement l'erreur E0004
+    if let Ok(reponse) = service_ordonnance.call(request).await {
+        Ok(reponse)
+    } else {
+        Err(StatusCode::TOO_MANY_REQUESTS)
     }
 }

@@ -8,11 +8,12 @@ mod protocole;
 mod registre;
 mod gestionnaire;
 mod securite;
-mod middleware_ddos; // Module intermédiaire isolé
+mod middleware_ddos; 
+mod moteur_recherche; // 👈 AJOUT INDISPENSABLE : On déclare le module à Rust ici !
 
 use registre::CatalogueUtilisateurs;
 use gestionnaire::point_entree_recherche;
-use middleware_ddos::appliquer_protection_ddos; // Importation directe de l'adaptateur
+use middleware_ddos::appliquer_protection_ddos;
 
 /// 🌐 INTERFACE STATIQUE DE PRODUCTION (YRION CORE v4)
 async fn page_accueil() -> Html<&'static str> {
@@ -53,7 +54,6 @@ async fn main() {
         .route("/yrion_recherche", get(point_entree_recherche)) 
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new())
-        // Notre passerelle isolée gère le bouclier anti-ddos sans dépendances manquantes
         .layer(middleware::from_fn(appliquer_protection_ddos))
         .with_state(base_donnees_recherche);
 
