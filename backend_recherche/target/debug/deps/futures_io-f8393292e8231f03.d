@@ -1,0 +1,5 @@
+/home/Shamil/nerax_yrion/backend_recherche/target/debug/deps/futures_io-f8393292e8231f03.d: /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.32/src/lib.rs
+
+/home/Shamil/nerax_yrion/backend_recherche/target/debug/deps/libfutures_io-f8393292e8231f03.rmeta: /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.32/src/lib.rs
+
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/futures-io-0.3.32/src/lib.rs:
