@@ -1,8 +1,9 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
-use axum::{routing::get, Router, response::Html};
+use axum::{routing::get, Router, response::Html, error_handling::HandleErrorLayer};
 use tokio::sync::RwLock;
 use tower_http::{cors::CorsLayer, compression::CompressionLayer};
+use tower::{ServiceBuilder, BoxError};
 
 mod protocole;
 mod registre;
@@ -48,15 +49,21 @@ async fn main() {
     // 🛡️ ALLOCATION MÉMOIRE PRÉ-CALCULÉE INDUSTRIELLE
     let base_donnees_recherche = Arc::new(RwLock::new(CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
 
+    // 🚀 4. ENCAPSULATION DU BOUCLIER ANTI-DDOS POUR SATISFAIRE LA CONTRAINTE `CLONE` D'AXUM
+    let couche_securite_anti_ddos = ServiceBuilder::new()
+        .layer(HandleErrorLayer::new(|err: BoxError| async move {
+            axum::http::StatusCode::TOO_MANY_REQUESTS
+        }))
+        .buffer(1024) // Crée une file d'attente MPSC permettant de rendre le RateLimit clonable
+        .layer(bouclier_anti_ddos());
+
     // 🚀 CONFIGURATION DES PROTOCOLES ET DES COUCHES SÉCURISÉES EN SÉRIE
-    // Correction de l'erreur E0277 : Application directe des middlewares sur le Router.
-    // L'ordre d'exécution se fait du bas vers le haut (le bouclier intercepte avant la compression).
     let application = Router::new()
         .route("/", get(page_accueil)) 
         .route("/yrion_recherche", get(point_entree_recherche)) 
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new())
-        .layer(bouclier_anti_ddos())
+        .layer(couche_securite_anti_ddos) // Injection sécurisée et compatible
         .with_state(base_donnees_recherche);
 
     // ⚡ LECTURE INTERNATIONALE DU PORT DE DÉPLOIEMENT
@@ -82,7 +89,6 @@ async fn main() {
 }
 
 /// 🛑 INTERCEPTEUR DE SIGNAL DE FIN DE VIE DU SERVEUR
-/// Permet de vider la mémoire et de fermer proprement les sockets Web lorsque Render redémarre l'application.
 async fn attendre_signal_extinction() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
@@ -107,4 +113,4 @@ async fn attendre_signal_extinction() {
     }
 }
 
-// mise ajour niveau 1
+// mise a jour niveau 2
