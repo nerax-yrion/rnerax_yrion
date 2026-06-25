@@ -3,7 +3,6 @@ use std::sync::Arc;
 use axum::{routing::get, Router, response::Html};
 use tokio::sync::RwLock;
 use tower_http::{cors::CorsLayer, compression::CompressionLayer};
-use tower::ServiceBuilder;
 
 mod protocole;
 mod registre;
@@ -50,15 +49,14 @@ async fn main() {
     let base_donnees_recherche = Arc::new(RwLock::new(CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
 
     // 🚀 CONFIGURATION DES PROTOCOLES ET DES COUCHES SÉCURISÉES EN SÉRIE
+    // Correction de l'erreur E0277 : Application directe des middlewares sur le Router.
+    // L'ordre d'exécution se fait du bas vers le haut (le bouclier intercepte avant la compression).
     let application = Router::new()
         .route("/", get(page_accueil)) 
         .route("/yrion_recherche", get(point_entree_recherche)) 
         .layer(CorsLayer::permissive())
-        .layer(
-            ServiceBuilder::new()
-                .layer(CompressionLayer::new())
-                .layer(bouclier_anti_ddos())
-        )
+        .layer(CompressionLayer::new())
+        .layer(bouclier_anti_ddos())
         .with_state(base_donnees_recherche);
 
     // ⚡ LECTURE INTERNATIONALE DU PORT DE DÉPLOIEMENT
@@ -96,7 +94,7 @@ async fn attendre_signal_extinction() {
     let extinction = async {
         tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())
             .expect("Impossible d'installer le gestionnaire de signal SIGTERM")
-            .recv()
+            .recv() 
             .await;
     };
 
@@ -107,6 +105,6 @@ async fn attendre_signal_extinction() {
         _ = ctrl_c => println!("\n[SYSTEME] Signal Ctrl+C intercepté. Extinction propre en cours..."),
         _ = extinction => println!("\n[SYSTEME] Signal SIGTERM (Render) intercepté. Nettoyage et fermeture..."),
     }
-} 
+}
 
-// mise a jour niveau 2
+// mise ajour niveau 1
