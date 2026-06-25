@@ -3,7 +3,7 @@ use std::sync::Arc;
 use axum::{routing::get, Router, response::Html, error_handling::HandleErrorLayer};
 use tokio::sync::RwLock;
 use tower_http::{cors::CorsLayer, compression::CompressionLayer};
-use tower::{ServiceBuilder, BoxError};
+use tower::{ServiceBuilder, BoxError, buffer::BufferLayer};
 
 mod protocole;
 mod registre;
@@ -49,12 +49,12 @@ async fn main() {
     // 🛡️ ALLOCATION MÉMOIRE PRÉ-CALCULÉE INDUSTRIELLE
     let base_donnees_recherche = Arc::new(RwLock::new(CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
 
-    // 🚀 4. ENCAPSULATION DU BOUCLIER ANTI-DDOS POUR SATISFAIRE LA CONTRAINTE `CLONE` D'AXUM
+    // 🚀 4. ENCAPSULATION DU BOUCLIER ANTI-DDOS AVEC L'IMPORTATION EXPLICITE DE BUFFERLAYER
     let couche_securite_anti_ddos = ServiceBuilder::new()
         .layer(HandleErrorLayer::new(|err: BoxError| async move {
             axum::http::StatusCode::TOO_MANY_REQUESTS
         }))
-        .buffer(1024) // Crée une file d'attente MPSC permettant de rendre le RateLimit clonable
+        .layer(BufferLayer::new(1024)) // Solution correcte : On passe par le type BufferLayer directement
         .layer(bouclier_anti_ddos());
 
     // 🚀 CONFIGURATION DES PROTOCOLES ET DES COUCHES SÉCURISÉES EN SÉRIE
@@ -63,7 +63,7 @@ async fn main() {
         .route("/yrion_recherche", get(point_entree_recherche)) 
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new())
-        .layer(couche_securite_anti_ddos) // Injection sécurisée et compatible
+        .layer(couche_securite_anti_ddos)
         .with_state(base_donnees_recherche);
 
     // ⚡ LECTURE INTERNATIONALE DU PORT DE DÉPLOIEMENT
@@ -113,4 +113,4 @@ async fn attendre_signal_extinction() {
     }
 }
 
-// mise a jour niveau 2
+// code version 2
