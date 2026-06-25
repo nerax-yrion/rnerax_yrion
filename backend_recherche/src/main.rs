@@ -1,22 +1,20 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
-use axum::{routing::get, Router, response::Html, error_handling::HandleErrorLayer};
+use axum::{routing::get, Router, response::Html, middleware};
 use tokio::sync::RwLock;
 use tower_http::{cors::CorsLayer, compression::CompressionLayer};
-use tower::{ServiceBuilder, BoxError, buffer::BufferLayer};
 
 mod protocole;
 mod registre;
 mod gestionnaire;
 mod securite;
-mod moteur_recherche;
+mod middleware_ddos; // Module intermédiaire isolé
 
 use registre::CatalogueUtilisateurs;
 use gestionnaire::point_entree_recherche;
-use securite::bouclier_anti_ddos;
+use middleware_ddos::appliquer_protection_ddos; // Importation directe de l'adaptateur
 
-/// 🌐 INTERFACE D'ACCUEIL NAVIGATEUR (TEXTE ESSENTIEL)
-/// Affiche uniquement le créateur, la version et le statut en ligne.
+/// 🌐 INTERFACE STATIQUE DE PRODUCTION (YRION CORE v4)
 async fn page_accueil() -> Html<&'static str> {
     Html(r#"
         Créateur: Nerax_Yrion
@@ -31,13 +29,13 @@ async fn main() {
     let url_database = std::env::var("DATABASE_URL")
         .unwrap_or_else(|_| "postgres://user:password@localhost/dbname".to_string());
 
-    // ⚡ 2. INITIALISATION ET CONNEXION AU POOL NEON POSTGRESQL
+    // ⚡ 2. INITIALISATION DU POOL POSTGRESQL MULTI-THREAD ASYNC
     println!("[SYSTEME] Connexion à la forteresse de données Neon...");
     let pool_neon = sqlx::PgPool::connect(&url_database)
         .await
         .expect("Impossible de se connecter à la base de données Neon");
 
-    // 🚀 3. DÉCLENCHEMENT DE LA MIGRATION QUANTIQUE SANS COMPROMIS
+    // 🚀 3. EXÉCUTION DES MIGRATIONS ET CRÉATION DES INDEXATIONS GIN
     println!("[SYSTEME] Déploiement des indexations d'élite (Dossier ./migrations)...");
     sqlx::migrate!("./migrations")
         .run(&pool_neon)
@@ -46,27 +44,20 @@ async fn main() {
         
     println!("[SYSTEME] Base de données Neon synchronisée et indexée avec succès !");
 
-    // 🛡️ ALLOCATION MÉMOIRE PRÉ-CALCULÉE INDUSTRIELLE
+    // 🛡️ ACCÉLÉRATEUR EN MÉMOIRE (RWLOCK ALLOCATION PLANIFIÉE POUR 1M D'UTILISATEURS)
     let base_donnees_recherche = Arc::new(RwLock::new(CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
 
-    // 🚀 4. ENCAPSULATION DU BOUCLIER ANTI-DDOS AVEC L'IMPORTATION EXPLICITE DE BUFFERLAYER
-    let couche_securite_anti_ddos = ServiceBuilder::new()
-        .layer(HandleErrorLayer::new(|err: BoxError| async move {
-            axum::http::StatusCode::TOO_MANY_REQUESTS
-        }))
-        .layer(BufferLayer::new(1024)) // Solution correcte : On passe par le type BufferLayer directement
-        .layer(bouclier_anti_ddos());
-
-    // 🚀 CONFIGURATION DES PROTOCOLES ET DES COUCHES SÉCURISÉES EN SÉRIE
+    // 🚀 4. INJECTION DES MIDDLEWARES ET CONSTRUTION DU PIPELINE ROUTEUR
     let application = Router::new()
         .route("/", get(page_accueil)) 
         .route("/yrion_recherche", get(point_entree_recherche)) 
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new())
-        .layer(couche_securite_anti_ddos)
+        // Notre passerelle isolée gère le bouclier anti-ddos sans dépendances manquantes
+        .layer(middleware::from_fn(appliquer_protection_ddos))
         .with_state(base_donnees_recherche);
 
-    // ⚡ LECTURE INTERNATIONALE DU PORT DE DÉPLOIEMENT
+    // ⚡ 5. CONFIGURATION DU PORT COMPATIBLE AVEC L'ENVIRONNEMENT RENDER
     let port: u16 = std::env::var("PORT")
         .unwrap_or_else(|_| "2013".to_string())
         .parse()
@@ -81,14 +72,14 @@ async fn main() {
     println!("🛡️ Immunité contre le piratage, scraping et DDoS activée");
     println!("========================================================");
 
-    // 🛑 DÉCLENCHEMENT DU SERVEUR AVEC BOUCLIER D'ARRÊT PROPRE (GRACEFUL SHUTDOWN)
+    // 🛑 6. ALLUMAGE ET GESTIONNAIRE D'ARRÊT PROPRE (GRACEFUL SHUTDOWN)
     axum::serve(ecouteur_reseau, application)
         .with_graceful_shutdown(attendre_signal_extinction())
         .await
         .unwrap();
 }
 
-/// 🛑 INTERCEPTEUR DE SIGNAL DE FIN DE VIE DU SERVEUR
+/// 🛑 INTERCEPTEUR DE SIGNAL LOGICIEL DE FIN DE VIE (SIGTERM / CTRL+C)
 async fn attendre_signal_extinction() {
     let ctrl_c = async {
         tokio::signal::ctrl_c()
@@ -108,9 +99,7 @@ async fn attendre_signal_extinction() {
     let extinction = std::future::pending::<()>();
 
     tokio::select! {
-        _ = ctrl_c => println!("\n[SYSTEME] Signal Ctrl+C intercepté. Extinction propre en cours..."),
-        _ = extinction => println!("\n[SYSTEME] Signal SIGTERM (Render) intercepté. Nettoyage et fermeture..."),
+        _ = ctrl_c => println!("\n[SYSTEME] Signal Ctrl+C intercepté. Déconnexion propre..."),
+        _ = extinction => println!("\n[SYSTEME] Signal SIGTERM (Render) intercepté. Libération RAM..."),
     }
 }
-
-// code version 2

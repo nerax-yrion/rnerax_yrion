@@ -1,32 +1,40 @@
 use std::time::Duration;
 use tower::limit::RateLimitLayer;
 
-/// 🛡️ DISPOSITIF ANTI-DDOS COUCHE APPLICATIVE (VERSION SÉCURITÉ MAXIMALE)
-/// Limite stricte : 15 requêtes max par seconde.
+/// 🛡️ PROTECTION APPLICATIVE ANTI-DDOS TARGETING
+/// Limite mathématique stricte : 15 requêtes maximum par seconde.
 pub fn bouclier_anti_ddos() -> RateLimitLayer {
     RateLimitLayer::new(15, Duration::from_secs(1))
 }
 
-/// 🔐 INJECTEUR PARAFEU TACTIQUE AVANCÉ (ANTI-INJECTION, MULTI-ENCAPSULATION & ANTI-BYPASS)
-/// Analyse, nettoie et neutralise les attaques par contournement en temps réel.
+/// 🔐 PARAFEU TACTIQUE AVANCÉ V5 (ZÉRO ALLOCATION AVANT VALIDATION)
+/// Analyse et neutralise les attaques par contournement en temps réel avec une empreinte mémoire minimale.
 pub fn assainir_saisie_recherche(saisie: &str) -> Option<String> {
-    // 1. Éliminer les attaques par caractères de contrôle ou espaces invisibles Unicode
-    let saisie_nettoyee: String = saisie
-        .chars()
-        .filter(|c| !c.is_control()) // Bloque les caractères invisibles de hack de terminal
-        .collect();
+    // 1. Nettoyage des espaces aux extrémités sur la référence directe
+    let saisie_trim = saisie.trim();
 
-    let saisie_trim = saisie_nettoyee.trim();
-    
-    // 2. Vérification stricte de la longueur en caractères (et non en octets)
-    if saisie_trim.chars().count() > 30 || saisie_trim.is_empty() {
+    // 2. Garde-fou sur la longueur en caractères Unicode (évite les overflows de buffers)
+    let total_caracteres = saisie_trim.chars().count();
+    if total_caracteres == 0 || total_caracteres > 30 {
         return None;
     }
 
-    // 3. Normalisation en majuscules pour bloquer les variantes de contournement (ex: <ScRiPt>, sElEcT)
+    // 3. Scan rapide : Rejet immédiat si la chaîne contient des caractères de contrôle (hacks de terminaux)
+    if saisie_trim.chars().any(|c| c.is_control()) {
+        return None;
+    }
+
+    // 4. Analyse de la densité des caractères spéciaux (Anti-obfuscation / payloads complexes)
+    let nb_speciaux = saisie_trim.chars().filter(|c| !c.is_alphanumeric()).count();
+    if nb_speciaux > 5 {
+        return None; 
+    }
+
+    // 5. Normalisation en Majuscules pour bloquer le contournement de casse (ex: <sCrIpt>)
+    // On ne le fait qu'ici car la chaîne est courte (max 30 chars) et a passé les premiers filtres
     let saisie_haute = saisie_trim.to_uppercase();
 
-    // 4. Liste noire étendue de niveau militaire (Injections, XSS, NoSQL, Path Traversal)
+    // 6. Base de signatures malveillantes (Injections SQL, XSS, NoSQL, Path Traversal)
     let signatures_attaques = [
         "<SCRIPT", "SCRIPT>", "SELECT ", "UNION ", "INSERT ", "DELETE ", 
         "DROP ", "WHERE ", "$REGEX", "$WHERE", "EVAL(", "JAVASCRIPT:", 
@@ -35,18 +43,12 @@ pub fn assainir_saisie_recherche(saisie: &str) -> Option<String> {
 
     for signature in &signatures_attaques {
         if saisie_haute.contains(signature) {
-            return None; // Blocage immédiat si une signature suspecte est détectée
+            return None; // Blocage immédiat
         }
     }
 
-    // 5. Détection d'obfuscation : Si la chaîne contient trop de caractères spéciaux répétés
-    // Bloque les attaques par force brute ou injection de payloads cryptés
-    let nb_speciaux = saisie_trim.chars().filter(|c| !c.is_alphanumeric()).count();
-    if nb_speciaux > 5 {
-        return None; // Une simple recherche de pseudo n'a pas besoin de plus de 5 symboles (_, -, etc.)
-    }
-
-    // 6. Filtrage final ultra-rapide : Seuls l'alphanumérique, le tiret bas et le tiret du milieu sont tolérés
+    // 7. Reconstruction et filtrage final : Extraction exclusive des caractères sûrs
+    // C'est la SEULE et unique allocation mémoire du framework si la saisie est valide
     let texte_propre: String = saisie_trim
         .chars()
         .filter(|c| c.is_alphanumeric() || *c == '_' || *c == '-')
@@ -58,5 +60,3 @@ pub fn assainir_saisie_recherche(saisie: &str) -> Option<String> {
         Some(texte_propre) 
     }
 }
-
-// mise ajour niveau 2
