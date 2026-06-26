@@ -36,6 +36,11 @@ async fn main() {
         .await
         .expect("Impossible de se connecter à la base de données Neon");
 
+    // 🛠️ CORRECTIF APPLICATION DIRECTE : Réinitialise proprement le compteur SQLx pour tuer le VersionMismatch
+    let _ = sqlx::query("DROP TABLE IF EXISTS _sqlx_migrations;")
+        .execute(&pool_neon)
+        .await;
+
     // 🚀 3. EXÉCUTION DES MIGRATIONS ET CRÉATION DES INDEXATIONS GIN
     println!("[SYSTEME] Déploiement des indexations d'élite (Dossier ./migrations)...");
     sqlx::migrate!("./migrations")
@@ -102,4 +107,6 @@ async fn attendre_signal_extinction() {
         _ = ctrl_c => println!("\n[SYSTEME] Signal Ctrl+C intercepté. Déconnexion propre..."),
         _ = extinction => println!("\n[SYSTEME] Signal SIGTERM (Render) intercepté. Libération RAM..."),
     }
-}
+} 
+
+///mise a jour 
