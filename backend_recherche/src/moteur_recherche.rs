@@ -4,6 +4,12 @@ use axum::extract::ws::Message;
 use tokio::sync::mpsc;
 use sqlx::PgPool;
 
+// Structure temporaire nécessaire à SQLx pour mapper les données sans vérification "offline"
+#[derive(sqlx::FromRow)]
+struct RowUtilisateur {
+    user_id: String,
+}
+
 pub async fn executer_filtrage_quantique(
     requete: String,
     pool_neon: &PgPool,
@@ -18,14 +24,10 @@ pub async fn executer_filtrage_quantique(
         }
 
         // 🛸 ALGORITHME DE CORRESPONDANCE FLOUE ULTRA-RAPIDE (ANTI-FAUTES DE FRAPPE)
-        // 1. lower(unaccent(...)) % lower(unaccent(...)) : Utilise l'index GIN pour filtrer instantanément par trigrammes.
-        // 2. similarity(...) : Calcule un score de 0 à 1 pour mesurer la ressemblance exacte.
-        // 3. ORDER BY score DESC : Met les profils les plus pertinents et les plus proches au sommet de la pile.
-        let requete_db = sqlx::query!(
+        // La logique exacte et le tri par similarité restent à 100% identiques
+        let requete_db = sqlx::query_as::<_, RowUtilisateur>(
             r#"
-            SELECT user_id,
-                   similarity(lower(unaccent(pseudo)), lower(unaccent($1))) AS score_pseudo,
-                   similarity(lower(username), lower($1)) AS score_username
+            SELECT user_id
             FROM user_profiles 
             WHERE lower(unaccent(pseudo)) % lower(unaccent($1)) 
                OR lower(username) % lower($1)
@@ -35,10 +37,10 @@ pub async fn executer_filtrage_quantique(
                 similarity(lower(username), lower($1))
             ) DESC
             LIMIT 10
-            "#,
-            recherche_propre,
-            format!("%{}%", recherche_propre)
+            "#
         )
+        .bind(recherche_propre)
+        .bind(format!("%{}%", recherche_propre))
         .fetch_all(pool_neon)
         .await;
 
@@ -68,5 +70,3 @@ pub async fn executer_filtrage_quantique(
         }
     }
 }
-
-// mise a jour du serveur backend de recherche niveau 1 - ÉDITION FINALE ÉLITE
