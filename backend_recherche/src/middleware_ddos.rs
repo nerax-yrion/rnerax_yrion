@@ -13,9 +13,12 @@ use crate::securite::bouclier_anti_ddos;
 pub async fn appliquer_protection_ddos(request: Request, next: Next) -> Result<Response, StatusCode> {
     let limiteur = bouclier_anti_ddos();
     
-    // Encapsulation légère de la suite du pipeline Axum
-    let service_interne = tower::service_fn(|req: Request| async move {
-        Ok::<Response, std::convert::Infallible>(next.run(req).await)
+    // 🛠️ FIX CRITIQUE : Ajout de `move` et `.clone()` pour valider le trait `FnMut`
+    let service_interne = tower::service_fn(move |req: Request| {
+        let next = next.clone();
+        async move {
+            Ok::<Response, std::convert::Infallible>(next.run(req).await)
+        }
     });
     
     // Correction de la tuyauterie : Le layer enveloppe le service interne
@@ -28,3 +31,5 @@ pub async fn appliquer_protection_ddos(request: Request, next: Next) -> Result<R
         Err(StatusCode::TOO_MANY_REQUESTS)
     }
 }
+
+//mise a jour 
