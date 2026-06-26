@@ -1,62 +1,72 @@
 use crate::protocole::{PaquetRecherche, ProfilPublic};
-use crate::registre::RegistrePartage;
 use crate::securite::assainir_saisie_recherche;
 use axum::extract::ws::Message;
 use tokio::sync::mpsc;
+use sqlx::PgPool;
 
 pub async fn executer_filtrage_quantique(
     requete: String,
-    registre: &RegistrePartage,
+    pool_neon: &PgPool,
     tx: &mpsc::UnboundedSender<Message>,
 ) {
     // 🛡️ SÉCURITÉ : Validation immédiate et nettoyage de la chaîne de caractères
     if let Some(saisie_propre) = assainir_saisie_recherche(&requete) {
-        let recherche_minuscule = saisie_propre.trim().to_lowercase();
+        let recherche_propre = saisie_propre.trim();
         
-        if recherche_minuscule.is_empty() { 
+        if recherche_propre.is_empty() { 
             return; 
         }
 
-        // Accès en lecture seule ultra-rapide sur l'index partagé
-        let lecture_index = registre.read().await;
-        
-        // Allocation initiale optimisée à la taille exacte requise (Zéro réallocation en cours de route)
-        let mut resultats_trouves = Vec::with_capacity(10);
+        // 🛸 ALGORITHME DE CORRESPONDANCE FLOUE ULTRA-RAPIDE (ANTI-FAUTES DE FRAPPE)
+        // 1. lower(unaccent(...)) % lower(unaccent(...)) : Utilise l'index GIN pour filtrer instantanément par trigrammes.
+        // 2. similarity(...) : Calcule un score de 0 à 1 pour mesurer la ressemblance exacte.
+        // 3. ORDER BY score DESC : Met les profils les plus pertinents et les plus proches au sommet de la pile.
+        let requete_db = sqlx::query!(
+            r#"
+            SELECT user_id,
+                   similarity(lower(unaccent(pseudo)), lower(unaccent($1))) AS score_pseudo,
+                   similarity(lower(username), lower($1)) AS score_username
+            FROM user_profiles 
+            WHERE lower(unaccent(pseudo)) % lower(unaccent($1)) 
+               OR lower(username) % lower($1)
+               OR lower(unaccent(pseudo)) LIKE lower(unaccent($2))
+            ORDER BY greatest(
+                similarity(lower(unaccent(pseudo)), lower(unaccent($1))), 
+                similarity(lower(username), lower($1))
+            ) DESC
+            LIMIT 10
+            "#,
+            recherche_propre,
+            format!("%{}%", recherche_propre)
+        )
+        .fetch_all(pool_neon)
+        .await;
 
-        // Parcours optimisé au niveau du cache CPU
-        for user_id in &lecture_index.base_pseudos {
-            
-            // 🚀 OPTIMISATION RADICALE : Comparaison insensible à la casse SANS allocation mémoire.
-            // On vérifie d'abord si une correspondance brute existe, ou on utilise un itérateur de caractères
-            // pour éviter le coût CPU d'un `.to_lowercase()` complet sur toute la chaîne.
-            let match_trouve = user_id.as_str().to_lowercase().contains(&recherche_minuscule);
+        match requete_db {
+            Ok(lignes) => {
+                // Allocation initiale optimisée à la taille exacte (Zéro réallocation RAM)
+                let mut resultats_trouves = Vec::with_capacity(lignes.len());
 
-            if match_trouve {
-                resultats_trouves.push(ProfilPublic {
-                    user_id: user_id.clone(),
-                    en_ligne: true,
-                });
+                for ligne in lignes {
+                    resultats_trouves.push(ProfilPublic {
+                        user_id: ligne.user_id,
+                        en_ligne: true, // Géré dynamiquement par l'écosystème Yrion
+                    });
+                }
 
-                // 🛡️ SÉCURITÉ ANTI-SCRAPING STRICTE : Maximum 10 résultats.
-                // Placé ici pour sortir immédiatement de la boucle dès le 10e élément trouvé.
-                if resultats_trouves.len() >= 10 {
-                    break;
+                // Envoi instantané du paquet JSON converti de manière fulgurante au client Flutter
+                if !resultats_trouves.is_empty() {
+                    let reponse = PaquetRecherche::ResultatsFiltres { utilisateurs: resultats_trouves };
+                    if let Ok(json_brut) = serde_json::to_string(&reponse) {
+                        let _ = tx.send(Message::Text(json_brut));
+                    }
                 }
             }
-        }
-
-        // Libération immédiate du verrou pour maximiser la concurrence du serveur
-        drop(lecture_index);
-
-        // Envoi instantané du paquet JSON converti de manière ultra-rapide
-        if !resultats_trouves.is_empty() {
-            let reponse = PaquetRecherche::ResultatsFiltres { utilisateurs: resultats_trouves };
-            if let Ok(json_brut) = serde_json::to_string(&reponse) {
-                let _ = tx.send(Message::Text(json_brut));
+            Err(erreur_log) => {
+                println!("[ERREUR CYBER-MOTEUR] Échec de la recherche floue sur Neon : {:?}", erreur_log);
             }
         }
     }
 }
 
-
-//mise a jour du serveur backend de recherche niveau 1
+// mise a jour du serveur backend de recherche niveau 1 - ÉDITION FINALE ÉLITE

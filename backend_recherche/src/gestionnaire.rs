@@ -6,26 +6,35 @@ use axum::{
 use futures_util::{sink::SinkExt, stream::StreamExt};
 use std::sync::Arc;
 use tokio::sync::mpsc;
+use sqlx::PgPool; // 👈 AJOUT CRUCIAL : Importation du type Pool pour Neon
 
 use crate::moteur_recherche;
 use crate::protocole::PaquetRecherche;
 use crate::registre::RegistrePartage;
 
+// ⚡ RESTRUCTURATION DE L'ÉTAT COMPOSITE D'YRION (HAUTE DISPONIBILITÉ)
+// Regroupe le registre RAM et le pool SQL pour une injection propre via l'Extracteur Axum
+pub struct EtatRecherche {
+    pub registre: RegistrePartage,
+    pub pool_neon: PgPool,
+}
+pub type EtatRecherchePartage = Arc<EtatRecherche>;
+
 pub async fn point_entree_recherche(
     ws: WebSocketUpgrade,
-    State(registre): State<RegistrePartage>,
+    State(etat): State<EtatRecherchePartage>, // 👈 CHANGEMENT STRATÉGIQUE : On passe l'état partagé global
 ) -> impl IntoResponse {
     // Surclassement immédiat vers WebSocket avec configuration mémoire optimale
-    ws.on_upgrade(move |socket| traiter_flux_recherche_securise(socket, registre))
+    ws.on_upgrade(move |socket| traiter_flux_recherche_securise(socket, etat))
 }
 
-async fn traiter_flux_recherche_securise(socket: WebSocket, registre: RegistrePartage) {
+async fn traiter_flux_recherche_securise(socket: WebSocket, etat: EtatRecherchePartage) {
     let (mut expediteur_ws, mut recepteur_ws) = socket.split();
     
-    // Canal atomique à allocation optimisée
+    // Canal atomique à allocation optimisée (Unbounded pour une latence à 0ms)
     let (tx, mut rx) = mpsc::unbounded_channel::<Message>();
 
-    // 🚀 OPTIMISATION 1 : Tâche d'envoi autonome qui meurt proprement dès que `tx` ou la socket lâche
+    // 🚀 OPTIMISATION 1 : Tâche d'envoi autonome en tâche de fond
     tokio::spawn(async move {
         while let Some(msg) = rx.recv().await {
             if expediteur_ws.send(msg).await.is_err() {
@@ -34,29 +43,30 @@ async fn traiter_flux_recherche_securise(socket: WebSocket, registre: RegistrePa
         }
     });
 
-    // On enveloppe l'émetteur dans un Arc pour permettre des recherches parallèles ultra-rapides
+    // Enveloppe de l'émetteur pour la distribution parallèle des paquets
     let tx_partage = Arc::new(tx);
 
-    // Écoute active et traitement non-bloquant des requêtes entrantes
+    // Écoute active et traitement non-bloquant du flux asynchrone
     while let Some(Ok(message_brut)) = recepteur_ws.next().await {
         if let Message::Text(corps_texte) = message_brut {
             if let Ok(paquet) = serde_json::from_str::<PaquetRecherche>(&corps_texte) {
                 match paquet {
-                    // Synchronisation asynchrone dans la RAM du catalogue de recherche
+                    // Synchronisation asynchrone locale dans la RAM du catalogue si besoin
                     PaquetRecherche::AlimenterCatalogue { user_id } => {
-                        let mut ecriture = registre.write().await;
+                        let mut ecriture = etat.registre.write().await;
                         ecriture.base_pseudos.insert(user_id);
                     }
 
-                    // 🚀 OPTIMISATION 2 : Exécution de la recherche en concurrence asynchrone
-                    // L'utilisation de tokio::spawn ici empêche un utilisateur qui tape trop vite 
-                    // de bloquer sa propre socket. Chaque recherche tourne sur son propre thread vert.
+                    // 🛸 RECHERCHE FLOUE QUANTIQUE (IMMUNITÉ AUX FAUTES DE FRAPPE & ZÉRO CONFLIT)
                     PaquetRecherche::LancerRecherche { requete } => {
-                        let registre_clone = registre.clone();
+                        let pool_clone = etat.pool_neon.clone(); // Le clonage d'un PgPool est ultra-léger (Arc interne)
                         let tx_clone = Arc::clone(&tx_partage);
                         
+                        // Chaque frappe de l'utilisateur génère un thread vert Tokio indépendant.
+                        // Même si l'utilisateur tape à une vitesse folle, Neon résout la requête floue
+                        // en parallèle sans jamais ralentir le reste de l'application Flutter.
                         tokio::spawn(async move {
-                            moteur_recherche::executer_filtrage_quantique(requete, &registre_clone, &tx_clone).await;
+                            moteur_recherche::executer_filtrage_quantique(requete, &pool_clone, &tx_clone).await;
                         });
                     }
 
@@ -67,8 +77,7 @@ async fn traiter_flux_recherche_securise(socket: WebSocket, registre: RegistrePa
         }
     }
     
-    // Au sortir de la boucle, `recepteur_ws` et `tx_partage` sont détruits naturellement.
-    // Le canal se ferme proprement, ce qui met fin à la tâche d'envoi automatiquement sans gaspiller de CPU.
+    // Nettoyage atomique automatique lors de la déconnexion
 }
 
-// mise a jour du fichier gestionnair version 1
+// mise a jour du fichier gestionnaire version 2 - ÉDITION FINALE ÉLITE

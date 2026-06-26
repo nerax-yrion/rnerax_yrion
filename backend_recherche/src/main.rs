@@ -1,7 +1,6 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 use axum::{routing::get, Router, response::Html, middleware};
-use tokio::sync::RwLock;
 use tower_http::{cors::CorsLayer, compression::CompressionLayer};
 
 mod protocole;
@@ -9,11 +8,11 @@ mod registre;
 mod gestionnaire;
 mod securite;
 mod middleware_ddos; 
-mod moteur_recherche; // 👈 AJOUT INDISPENSABLE : On déclare le module à Rust ici !
+mod moteur_recherche; 
 
-use registre::CatalogueUtilisateurs;
-use gestionnaire::point_entree_recherche;
-use middleware_ddos::appliquer_protection_ddos;
+// 🚀 CORRECTIF CRUCIAL : Syntaxe "use ... as ..." pour éviter l'erreur de rust-analyzer
+use gestionnaire::point_entree_recherche as point_entree_recherche;
+use middleware_ddos::appliquer_protection_ddos as appliquer_protection_ddos;
 
 /// 🌐 INTERFACE STATIQUE DE PRODUCTION (YRION CORE v4)
 async fn page_accueil() -> Html<&'static str> {
@@ -36,7 +35,7 @@ async fn main() {
         .await
         .expect("Impossible de se connecter à la base de données Neon");
 
-    // 🛠️ CORRECTIF APPLICATION DIRECTE : Réinitialise proprement le compteur SQLx pour tuer le VersionMismatch
+    // 🛠️ CORRECTIF APPLICATION DIRECTE : Réinitialise proprement le compteur SQLx
     let _ = sqlx::query("DROP TABLE IF EXISTS _sqlx_migrations;")
         .execute(&pool_neon)
         .await;
@@ -50,17 +49,23 @@ async fn main() {
         
     println!("[SYSTEME] Base de données Neon synchronisée et indexée avec succès !");
 
-    // 🛡️ ACCÉLÉRATEUR EN MÉMOIRE (RWLOCK ALLOCATION PLANIFIÉE POUR 1M D'UTILISATEURS)
-    let base_donnees_recherche = Arc::new(RwLock::new(CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
+    // 🛡️ ACCÉLÉRATEUR EN MÉMOIRE (ALLOCATION PLANIFIÉE POUR 1M D'UTILISATEURS)
+    let base_donnees_recherche = Arc::new(tokio::sync::RwLock::new(registre::CatalogueUtilisateurs::initialiser_haute_capacite(1000000)));
 
-    // 🚀 4. INJECTION DES MIDDLEWARES ET CONSTRUTION DU PIPELINE ROUTEUR
+    // 🤝 INJECTION DE L'ÉTAT COMPOSITE (REGISTRE RAM + POOL NEON D'ÉLITE)
+    let etat_global_application = Arc::new(gestionnaire::EtatRecherche {
+        registre: base_donnees_recherche,
+        pool_neon: pool_neon.clone(),
+    });
+
+    // 🚀 4. INJECTION DES MIDDLEWARES ET CONSTRUTION DU PIPELINE ROUTEUR AXUM
     let application = Router::new()
         .route("/", get(page_accueil)) 
         .route("/yrion_recherche", get(point_entree_recherche)) 
         .layer(CorsLayer::permissive())
         .layer(CompressionLayer::new())
         .layer(middleware::from_fn(appliquer_protection_ddos))
-        .with_state(base_donnees_recherche);
+        .with_state(etat_global_application);
 
     // ⚡ 5. CONFIGURATION DU PORT COMPATIBLE AVEC L'ENVIRONNEMENT RENDER
     let port: u16 = std::env::var("PORT")
@@ -108,5 +113,3 @@ async fn attendre_signal_extinction() {
         _ = extinction => println!("\n[SYSTEME] Signal SIGTERM (Render) intercepté. Libération RAM..."),
     }
 }
-
-// mise a jour
