@@ -107,6 +107,6 @@ async fn attendre_signal_extinction() {
         _ = ctrl_c => println!("\n[SYSTEME] Signal Ctrl+C intercepté. Déconnexion propre..."),
         _ = extinction => println!("\n[SYSTEME] Signal SIGTERM (Render) intercepté. Libération RAM..."),
     }
-} 
+}
 
-///mise a jour 
+// mise a jour
