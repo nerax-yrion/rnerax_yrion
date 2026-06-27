@@ -1,0 +1,13 @@
+/home/Shamil/nerax_yrion/backend_recherche/target/debug/deps/uuid-749aacf337c54b87.d: /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/lib.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/macros.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/builder.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/error.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/non_nil.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/parser.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/fmt.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/timestamp.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/external.rs
+
+/home/Shamil/nerax_yrion/backend_recherche/target/debug/deps/libuuid-749aacf337c54b87.rmeta: /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/lib.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/macros.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/builder.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/error.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/non_nil.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/parser.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/fmt.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/timestamp.rs /home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/external.rs
+
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/lib.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/macros.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/builder.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/error.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/non_nil.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/parser.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/fmt.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/timestamp.rs:
+/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/uuid-1.23.3/src/external.rs:

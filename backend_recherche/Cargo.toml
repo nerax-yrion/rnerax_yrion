@@ -1,3 +1,8 @@
+[package]
+name = "yrion_recherche_imprenable"
+version = "4.0.0"
+edition = "2021"
+
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 axum = { version = "0.7", features = ["ws"] }
@@ -8,6 +13,5 @@ serde_json = "1.0"
 futures-util = "0.3"
 lazy_static = "1.5.0"
 
-# 🛸 MOTEUR DE BASE DE DONNÉES POSTGRESQL AVEC SUPPORTS DE MIGRATION NEON ET TIMESTAMPS
-# 🚀 CORRECTIF : "uuid" ajouté dans les features pour compiler src/moteur_recherche.rs
+# 🛸 MOTEUR DE BASE DE DONNÉES POSTGRESQL MULTI-THREAD AVEC TIMESTAMPS ET UUID
 sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "macros", "chrono", "uuid"] }
