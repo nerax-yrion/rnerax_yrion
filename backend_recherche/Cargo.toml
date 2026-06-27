@@ -1,21 +1,13 @@
-[package]
-name = "yrion_recherche_imprenable"
-version = "4.0.0"
-edition = "2021"
-
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
 axum = { version = "0.7", features = ["ws"] }
-# 🚀 AJOUT : "util" est activé pour supporter proprement les fonctions de conversion de services
 tower = { version = "0.4", features = ["limit", "util"] }
-# 🚀 PARFAIT : Ta correction avec "compression-full" est conservée pour Render
 tower-http = { version = "0.5", features = ["cors", "compression-full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 futures-util = "0.3"
-# 🚀 MISE À JOUR : Passage à la version 1.5.0 pour correspondre aux logs de Render
 lazy_static = "1.5.0"
 
 # 🛸 MOTEUR DE BASE DE DONNÉES POSTGRESQL AVEC SUPPORTS DE MIGRATION NEON ET TIMESTAMPS
-# Optimisé avec "chrono" pour décoder nativement les types TIMESTAMP WITH TIME ZONE d'Yrion Core v4
-sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "macros", "chrono"] }
+# 🚀 CORRECTIF : "uuid" ajouté dans les features pour compiler src/moteur_recherche.rs
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "macros", "chrono", "uuid"] }
