@@ -4,10 +4,10 @@ use axum::extract::ws::Message;
 use tokio::sync::mpsc;
 use sqlx::PgPool;
 
-// Structure temporaire nécessaire à SQLx pour mapper les données sans vérification "offline"
+// Structure temporaire adaptée pour décoder nativement les UUID de PostgreSQL
 #[derive(sqlx::FromRow)]
 struct RowUtilisateur {
-    user_id: String,
+    user_id: sqlx::types::Uuid, // 👈 Mappe l'UUID PostgreSQL directement
 }
 
 pub async fn executer_filtrage_quantique(
@@ -24,16 +24,16 @@ pub async fn executer_filtrage_quantique(
         }
 
         // 🛸 ALGORITHME DE CORRESPONDANCE FLOUE ULTRA-RAPIDE (ANTI-FAUTES DE FRAPPE)
-        // La logique exacte et le tri par similarité restent à 100% identiques
+        // Utilisation obligatoire du wrapper immuable pour mordre sur l'index GIN_v4
         let requete_db = sqlx::query_as::<_, RowUtilisateur>(
             r#"
             SELECT user_id
             FROM user_profiles 
-            WHERE lower(unaccent(pseudo)) % lower(unaccent($1)) 
+            WHERE lower(public.yrion_unaccent_immutable(pseudo)) % lower(public.yrion_unaccent_immutable($1)) 
                OR lower(username) % lower($1)
-               OR lower(unaccent(pseudo)) LIKE lower(unaccent($2))
+               OR lower(public.yrion_unaccent_immutable(pseudo)) LIKE lower(public.yrion_unaccent_immutable($2))
             ORDER BY greatest(
-                similarity(lower(unaccent(pseudo)), lower(unaccent($1))), 
+                similarity(lower(public.yrion_unaccent_immutable(pseudo)), lower(public.yrion_unaccent_immutable($1))), 
                 similarity(lower(username), lower($1))
             ) DESC
             LIMIT 10
@@ -51,12 +51,13 @@ pub async fn executer_filtrage_quantique(
 
                 for ligne in lignes {
                     resultats_trouves.push(ProfilPublic {
-                        user_id: ligne.user_id,
+                        // On convertit l'UUID en String pour ton client Flutter
+                        user_id: ligne.user_id.to_string(), 
                         en_ligne: true, // Géré dynamiquement par l'écosystème Yrion
                     });
                 }
 
-                // Envoi instantané du paquet JSON converti de manière fulgurante au client Flutter
+                // Envoi instantané du paquet JSON converti au client Flutter
                 if !resultats_trouves.is_empty() {
                     let reponse = PaquetRecherche::ResultatsFiltres { utilisateurs: resultats_trouves };
                     if let Ok(json_brut) = serde_json::to_string(&reponse) {
