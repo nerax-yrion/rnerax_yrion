@@ -8,10 +8,10 @@
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE EXTENSION IF NOT EXISTS unaccent;
 
--- 🛠️ ENVELOPPE IMMUABLE CORRIGÉE : On force l'utilisation du dictionnaire 'unaccent'
+-- 🛠️ ENVELOPPE IMMUABLE RECTIFIÉE : Spécification explicite du schéma du dictionnaire 'public.unaccent'
 CREATE OR REPLACE FUNCTION public.yrion_unaccent_immutable(text)
 RETURNS text AS $$
-    SELECT public.unaccent('unaccent', $1); -- 👈 CORRECTION ICI
+    SELECT public.unaccent('public.unaccent', $1); -- 👈 RECTIFICATION : Schéma absolu imposé pour Neon
 $$ LANGUAGE sql IMMUTABLE PARALLEL SAFE;
 
 -- 🛡️ ÉTAPE 2 : VÉRIFICATION ET SÉCURISATION INTER-SERVICES DES TABLES
@@ -54,7 +54,7 @@ CREATE TABLE IF NOT EXISTS followers (
     PRIMARY KEY (follower_id, following_id)
 );
 
--- 🛸 ÉTAPE 3 : INDEXATION GIN MULTI-TRAME V4 (Changement de nom pour purger le cache Neon)
+-- 🛸 ÉTAPE 3 : INDEXATION GIN MULTI-TRAME V4
 CREATE INDEX IF NOT EXISTS idx_yrion_quantum_trgm_pseudo_v4 
 ON user_profiles USING gin (lower(public.yrion_unaccent_immutable(pseudo)) gin_trgm_ops);
 
