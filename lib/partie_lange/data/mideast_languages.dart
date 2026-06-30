@@ -9,3 +9,5 @@ final List<Map<String, String>> mideastLanguages = [
   {"code": "tk", "nom": "Türkmençe"}, // 🇹🇲
   {"code": "ps", "nom": "پښتو (Pashto)"}, // 🇦🇫
 ];
+
+// liste des langue dans les partie arrabie 1

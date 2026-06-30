@@ -30,4 +30,4 @@ final List<Map<String, String>> asiaLanguages = [
   {"code": "ky", "nom": "Кыргызча"}, // 🇰🇬
 ];
 
-// mise a jour 1
+// mise a jour des liste de landue du continent asiatique niveau 1

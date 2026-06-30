@@ -6,3 +6,5 @@ final List<Map<String, String>> americasLanguages = [
   {"code": "qu", "nom": "Runa Simi (Quechua)"}, // 🇵🇪
   {"code": "nv", "nom": "Diné bizaad (Navajo)"}, // 🇺🇸
 ];
+
+// mise ajour de la liste des langue americain niveau 1 

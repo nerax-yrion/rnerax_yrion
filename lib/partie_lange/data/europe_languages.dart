@@ -30,4 +30,4 @@ final List<Map<String, String>> europeLanguages = [
   {"code": "sr", "nom": "Српски"}, // 🇷🇸
 ];
 
-// mise ajour 1
+// mise ajour des liste des lange du continet erreupene 1

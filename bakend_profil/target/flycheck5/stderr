@@ -3,8 +3,8 @@ warning: unused manifest key: profile.release.panic-immediate-abort
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
     Blocking waiting for file lock on package cache
-   5.433293127s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint: fingerprint error for yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil)/Check { test: false }/TargetInner { name: "yrion_backend", doc: true, ..: with_path("/home/Shamil/nerax_yrion/bakend_profil/src/main.rs", Edition2021) }
-   5.434066234s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/yrion_backend-7795f750469cfa57/bin-yrion_backend`
+   5.446174047s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint: fingerprint error for yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil)/Check { test: false }/TargetInner { name: "yrion_backend", doc: true, ..: with_path("/home/Shamil/nerax_yrion/bakend_profil/src/main.rs", Edition2021) }
+   5.455392861s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/yrion_backend-7795f750469cfa57/bin-yrion_backend`
 
 Caused by:
     No such file or directory (os error 2)
@@ -46,8 +46,8 @@ Stack backtrace:
   24: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   25: <unknown>
-   6.918102393s  INFO prepare_target{force=false package_id=sqlx v0.8.6 target="sqlx"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-0.8.6/src/lib.rs", Edition2021) }
-   6.918475364s  INFO prepare_target{force=false package_id=sqlx v0.8.6 target="sqlx"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-72ca3b9d007e42c3/lib-sqlx`
+   7.962193842s  INFO prepare_target{force=false package_id=sqlx v0.8.6 target="sqlx"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-0.8.6/src/lib.rs", Edition2021) }
+   7.962340965s  INFO prepare_target{force=false package_id=sqlx v0.8.6 target="sqlx"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-72ca3b9d007e42c3/lib-sqlx`
 
 Caused by:
     No such file or directory (os error 2)
@@ -90,8 +90,8 @@ Stack backtrace:
   25: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   26: <unknown>
-   6.933809857s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-core v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx_core", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-core-0.8.6/src/lib.rs", Edition2021) }
-   6.934559068s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-core-ccdacb749fef0c24/lib-sqlx_core`
+   7.981306389s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-core v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx_core", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-core-0.8.6/src/lib.rs", Edition2021) }
+   7.981454520s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-core-ccdacb749fef0c24/lib-sqlx_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -135,8 +135,8 @@ Stack backtrace:
   26: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   27: <unknown>
-   7.040107325s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint: fingerprint error for native-tls v0.2.18/Check { test: false }/TargetInner { ..: lib_target("native_tls", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/native-tls-0.2.18/src/lib.rs", Edition2021) }
-   7.040728506s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/native-tls-09f4313ba994c7f7/lib-native_tls`
+   8.035536806s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint: fingerprint error for native-tls v0.2.18/Check { test: false }/TargetInner { ..: lib_target("native_tls", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/native-tls-0.2.18/src/lib.rs", Edition2021) }
+   8.037137636s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/native-tls-09f4313ba994c7f7/lib-native_tls`
 
 Caused by:
     No such file or directory (os error 2)
@@ -181,8 +181,8 @@ Stack backtrace:
   27: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   28: <unknown>
-   7.063314133s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for native-tls v0.2.18/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/native-tls-0.2.18/build.rs", Edition2021) }
-   7.064467805s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/native-tls-8b15e722f557dc1a/run-build-script-build-script-build`
+   8.039071235s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for native-tls v0.2.18/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/native-tls-0.2.18/build.rs", Edition2021) }
+   8.046633641s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/native-tls-8b15e722f557dc1a/run-build-script-build-script-build`
 
 Caused by:
     No such file or directory (os error 2)
@@ -229,104 +229,8 @@ Stack backtrace:
   29: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   30: <unknown>
-   7.072799605s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="build-script-main"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.9.117/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-main", "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.9.117/build/main.rs", Edition2021) }
-   7.082252140s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="build-script-main"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-sys-b486a6229aa06530/run-build-script-build-script-main`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: cargo_util::paths::read_bytes
-   1: cargo_util::paths::read
-   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   3: cargo::core::compiler::fingerprint::prepare_target
-   4: cargo::core::compiler::custom_build::build_work
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: cargo::core::compiler::compile
-   9: cargo::core::compiler::compile
-  10: cargo::core::compiler::compile
-  11: <cargo::core::compiler::build_runner::BuildRunner>::compile
-  12: cargo::ops::cargo_compile::compile_ws
-  13: cargo::ops::cargo_compile::compile_with_exec
-  14: cargo::ops::cargo_compile::compile
-  15: cargo::commands::check::exec
-  16: <cargo::cli::Exec>::exec
-  17: cargo::main
-  18: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  19: std::rt::lang_start::<()>::{closure#0}
-  20: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
-  21: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  22: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  23: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  24: std::rt::lang_start_internal::{closure#0}
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
-  25: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  26: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  27: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  28: std::rt::lang_start_internal
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
-  29: main
-  30: __libc_start_main
-             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
-  31: <unknown>
-   7.088460970s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.10.81/Check { test: false }/TargetInner { ..: lib_target("openssl", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.10.81/src/lib.rs", Edition2021) }
-   7.096126516s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-03653a0db0c030fc/lib-openssl`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: cargo_util::paths::read_bytes
-   1: cargo_util::paths::read
-   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   3: cargo::core::compiler::fingerprint::prepare_target
-   4: cargo::core::compiler::compile
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: cargo::core::compiler::compile
-   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
-  10: cargo::ops::cargo_compile::compile_ws
-  11: cargo::ops::cargo_compile::compile_with_exec
-  12: cargo::ops::cargo_compile::compile
-  13: cargo::commands::check::exec
-  14: <cargo::cli::Exec>::exec
-  15: cargo::main
-  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  17: std::rt::lang_start::<()>::{closure#0}
-  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
-  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  22: std::rt::lang_start_internal::{closure#0}
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
-  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  26: std::rt::lang_start_internal
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
-  27: main
-  28: __libc_start_main
-             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
-  29: <unknown>
-   7.110582493s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.10.81/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.10.81/build.rs", Edition2021) }
-   7.110939083s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-8e76829313daa04f/run-build-script-build-script-build`
+   8.053020756s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="build-script-main"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.9.117/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-main", "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.9.117/build/main.rs", Edition2021) }
+   8.054308310s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="build-script-main"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-sys-b486a6229aa06530/run-build-script-build-script-main`
 
 Caused by:
     No such file or directory (os error 2)
@@ -374,147 +278,8 @@ Stack backtrace:
   30: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   31: <unknown>
-   7.120899535s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.9.117/Check { test: false }/TargetInner { ..: lib_target("openssl_sys", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.9.117/src/lib.rs", Edition2021) }
-   7.120988475s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-sys-9ed97f7cf27af2ed/lib-openssl_sys`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: cargo_util::paths::read_bytes
-   1: cargo_util::paths::read
-   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   3: cargo::core::compiler::fingerprint::prepare_target
-   4: cargo::core::compiler::compile
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: cargo::core::compiler::compile
-   9: cargo::core::compiler::compile
-  10: <cargo::core::compiler::build_runner::BuildRunner>::compile
-  11: cargo::ops::cargo_compile::compile_ws
-  12: cargo::ops::cargo_compile::compile_with_exec
-  13: cargo::ops::cargo_compile::compile
-  14: cargo::commands::check::exec
-  15: <cargo::cli::Exec>::exec
-  16: cargo::main
-  17: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  18: std::rt::lang_start::<()>::{closure#0}
-  19: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
-  20: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  21: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  22: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  23: std::rt::lang_start_internal::{closure#0}
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
-  24: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  25: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  26: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  27: std::rt::lang_start_internal
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
-  28: main
-  29: __libc_start_main
-             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
-  30: <unknown>
-   7.236532139s  INFO prepare_target{force=false package_id=sqlx-macros v0.8.6 target="sqlx_macros"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-macros v0.8.6/Build/TargetInner { name_inferred: true, for_host: true, proc_macro: true, ..: lib_target("sqlx_macros", ["proc-macro"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-0.8.6/src/lib.rs", Edition2021) }
-   7.236994364s  INFO prepare_target{force=false package_id=sqlx-macros v0.8.6 target="sqlx_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-macros-83c7dfd165a9ef69/lib-sqlx_macros`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: cargo_util::paths::read_bytes
-   1: cargo_util::paths::read
-   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   3: cargo::core::compiler::fingerprint::prepare_target
-   4: cargo::core::compiler::compile
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
-   8: cargo::ops::cargo_compile::compile_ws
-   9: cargo::ops::cargo_compile::compile_with_exec
-  10: cargo::ops::cargo_compile::compile
-  11: cargo::commands::check::exec
-  12: <cargo::cli::Exec>::exec
-  13: cargo::main
-  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  15: std::rt::lang_start::<()>::{closure#0}
-  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
-  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  20: std::rt::lang_start_internal::{closure#0}
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
-  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  24: std::rt::lang_start_internal
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
-  25: main
-  26: __libc_start_main
-             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
-  27: <unknown>
-   7.265712279s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-core v0.8.6/Build/TargetInner { name_inferred: true, ..: lib_target("sqlx_core", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-core-0.8.6/src/lib.rs", Edition2021) }
-   7.272236649s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-core-5f6f4d8d6eda9e5a/lib-sqlx_core`
-
-Caused by:
-    No such file or directory (os error 2)
-
-Stack backtrace:
-   0: cargo_util::paths::read_bytes
-   1: cargo_util::paths::read
-   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
-   3: cargo::core::compiler::fingerprint::prepare_target
-   4: cargo::core::compiler::compile
-   5: cargo::core::compiler::compile
-   6: cargo::core::compiler::compile
-   7: cargo::core::compiler::compile
-   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
-   9: cargo::ops::cargo_compile::compile_ws
-  10: cargo::ops::cargo_compile::compile_with_exec
-  11: cargo::ops::cargo_compile::compile
-  12: cargo::commands::check::exec
-  13: <cargo::cli::Exec>::exec
-  14: cargo::main
-  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
-  16: std::rt::lang_start::<()>::{closure#0}
-  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
-  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  21: std::rt::lang_start_internal::{closure#0}
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
-  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
-  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
-  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
-  25: std::rt::lang_start_internal
-             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
-  26: main
-  27: __libc_start_main
-             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
-  28: <unknown>
-   7.353194249s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint: fingerprint error for native-tls v0.2.18/Build/TargetInner { ..: lib_target("native_tls", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/native-tls-0.2.18/src/lib.rs", Edition2021) }
-   7.364639648s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/native-tls-2530129fc33a43f0/lib-native_tls`
+   8.060945912s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.10.81/Check { test: false }/TargetInner { ..: lib_target("openssl", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.10.81/src/lib.rs", Edition2021) }
+   8.061571570s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-03653a0db0c030fc/lib-openssl`
 
 Caused by:
     No such file or directory (os error 2)
@@ -560,8 +325,57 @@ Stack backtrace:
   28: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   29: <unknown>
-   7.386334488s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.10.81/Build/TargetInner { ..: lib_target("openssl", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.10.81/src/lib.rs", Edition2021) }
-   7.388592365s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-d5551622f6b39ac2/lib-openssl`
+   8.083392979s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="build-script-build"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.10.81/RunCustomBuild/TargetInner { ..: custom_build_target("build-script-build", "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.10.81/build.rs", Edition2021) }
+   8.083910397s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="build-script-build"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-8e76829313daa04f/run-build-script-build-script-build`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::custom_build::build_work
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: cargo::core::compiler::compile
+  10: cargo::core::compiler::compile
+  11: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  12: cargo::ops::cargo_compile::compile_ws
+  13: cargo::ops::cargo_compile::compile_with_exec
+  14: cargo::ops::cargo_compile::compile
+  15: cargo::commands::check::exec
+  16: <cargo::cli::Exec>::exec
+  17: cargo::main
+  18: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  19: std::rt::lang_start::<()>::{closure#0}
+  20: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
+  21: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  22: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal::{closure#0}
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
+  25: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  26: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  27: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  28: std::rt::lang_start_internal
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
+  29: main
+  30: __libc_start_main
+             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
+  31: <unknown>
+   8.092619671s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.9.117/Check { test: false }/TargetInner { ..: lib_target("openssl_sys", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.9.117/src/lib.rs", Edition2021) }
+   8.093363896s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-sys-9ed97f7cf27af2ed/lib-openssl_sys`
 
 Caused by:
     No such file or directory (os error 2)
@@ -608,8 +422,194 @@ Stack backtrace:
   29: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   30: <unknown>
-   7.391943675s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.9.117/Build/TargetInner { ..: lib_target("openssl_sys", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.9.117/src/lib.rs", Edition2021) }
-   7.392761037s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-sys-5c3dd59acd47e323/lib-openssl_sys`
+   8.227964171s  INFO prepare_target{force=false package_id=sqlx-macros v0.8.6 target="sqlx_macros"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-macros v0.8.6/Build/TargetInner { name_inferred: true, for_host: true, proc_macro: true, ..: lib_target("sqlx_macros", ["proc-macro"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-0.8.6/src/lib.rs", Edition2021) }
+   8.233523118s  INFO prepare_target{force=false package_id=sqlx-macros v0.8.6 target="sqlx_macros"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-macros-83c7dfd165a9ef69/lib-sqlx_macros`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   8: cargo::ops::cargo_compile::compile_ws
+   9: cargo::ops::cargo_compile::compile_with_exec
+  10: cargo::ops::cargo_compile::compile
+  11: cargo::commands::check::exec
+  12: <cargo::cli::Exec>::exec
+  13: cargo::main
+  14: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  15: std::rt::lang_start::<()>::{closure#0}
+  16: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
+  17: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  18: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  19: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  20: std::rt::lang_start_internal::{closure#0}
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
+  21: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  22: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  23: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  24: std::rt::lang_start_internal
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
+  25: main
+  26: __libc_start_main
+             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
+  27: <unknown>
+   8.248883537s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-core v0.8.6/Build/TargetInner { name_inferred: true, ..: lib_target("sqlx_core", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-core-0.8.6/src/lib.rs", Edition2021) }
+   8.254831104s  INFO prepare_target{force=false package_id=sqlx-core v0.8.6 target="sqlx_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-core-5f6f4d8d6eda9e5a/lib-sqlx_core`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: <cargo::core::compiler::build_runner::BuildRunner>::compile
+   9: cargo::ops::cargo_compile::compile_ws
+  10: cargo::ops::cargo_compile::compile_with_exec
+  11: cargo::ops::cargo_compile::compile
+  12: cargo::commands::check::exec
+  13: <cargo::cli::Exec>::exec
+  14: cargo::main
+  15: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  16: std::rt::lang_start::<()>::{closure#0}
+  17: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
+  18: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  19: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  20: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  21: std::rt::lang_start_internal::{closure#0}
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
+  22: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  23: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  24: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  25: std::rt::lang_start_internal
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
+  26: main
+  27: __libc_start_main
+             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
+  28: <unknown>
+   8.387421991s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint: fingerprint error for native-tls v0.2.18/Build/TargetInner { ..: lib_target("native_tls", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/native-tls-0.2.18/src/lib.rs", Edition2021) }
+   8.387593259s  INFO prepare_target{force=false package_id=native-tls v0.2.18 target="native_tls"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/native-tls-2530129fc33a43f0/lib-native_tls`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  10: cargo::ops::cargo_compile::compile_ws
+  11: cargo::ops::cargo_compile::compile_with_exec
+  12: cargo::ops::cargo_compile::compile
+  13: cargo::commands::check::exec
+  14: <cargo::cli::Exec>::exec
+  15: cargo::main
+  16: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  17: std::rt::lang_start::<()>::{closure#0}
+  18: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
+  19: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  20: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  21: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  22: std::rt::lang_start_internal::{closure#0}
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
+  23: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  24: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  25: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  26: std::rt::lang_start_internal
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
+  27: main
+  28: __libc_start_main
+             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
+  29: <unknown>
+   8.401846133s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint: fingerprint error for openssl v0.10.81/Build/TargetInner { ..: lib_target("openssl", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-0.10.81/src/lib.rs", Edition2021) }
+   8.416206008s  INFO prepare_target{force=false package_id=openssl v0.10.81 target="openssl"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-d5551622f6b39ac2/lib-openssl`
+
+Caused by:
+    No such file or directory (os error 2)
+
+Stack backtrace:
+   0: cargo_util::paths::read_bytes
+   1: cargo_util::paths::read
+   2: cargo::core::compiler::fingerprint::_compare_old_fingerprint
+   3: cargo::core::compiler::fingerprint::prepare_target
+   4: cargo::core::compiler::compile
+   5: cargo::core::compiler::compile
+   6: cargo::core::compiler::compile
+   7: cargo::core::compiler::compile
+   8: cargo::core::compiler::compile
+   9: cargo::core::compiler::compile
+  10: <cargo::core::compiler::build_runner::BuildRunner>::compile
+  11: cargo::ops::cargo_compile::compile_ws
+  12: cargo::ops::cargo_compile::compile_with_exec
+  13: cargo::ops::cargo_compile::compile
+  14: cargo::commands::check::exec
+  15: <cargo::cli::Exec>::exec
+  16: cargo::main
+  17: std::sys::backtrace::__rust_begin_short_backtrace::<fn(), ()>
+  18: std::rt::lang_start::<()>::{closure#0}
+  19: <&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe as core::ops::function::FnOnce<()>>::call_once
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/core/src/ops/function.rs:287:21
+  20: std::panicking::catch_unwind::do_call::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  21: std::panicking::catch_unwind::<i32, &dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  22: std::panic::catch_unwind::<&dyn core::ops::function::Fn<(), Output = i32> + core::marker::Sync + core::panic::unwind_safe::RefUnwindSafe, i32>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  23: std::rt::lang_start_internal::{closure#0}
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:175:24
+  24: std::panicking::catch_unwind::do_call::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:581:40
+  25: std::panicking::catch_unwind::<isize, std::rt::lang_start_internal::{closure#0}>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panicking.rs:544:19
+  26: std::panic::catch_unwind::<std::rt::lang_start_internal::{closure#0}, isize>
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/panic.rs:359:14
+  27: std::rt::lang_start_internal
+             at /rustc/ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96/library/std/src/rt.rs:171:5
+  28: main
+  29: __libc_start_main
+             at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
+  30: <unknown>
+   8.436075085s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint: fingerprint error for openssl-sys v0.9.117/Build/TargetInner { ..: lib_target("openssl_sys", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/openssl-sys-0.9.117/src/lib.rs", Edition2021) }
+   8.441120579s  INFO prepare_target{force=false package_id=openssl-sys v0.9.117 target="openssl_sys"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/openssl-sys-5c3dd59acd47e323/lib-openssl_sys`
 
 Caused by:
     No such file or directory (os error 2)
@@ -657,8 +657,8 @@ Stack backtrace:
   30: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   31: <unknown>
-   7.478403959s  INFO prepare_target{force=false package_id=sqlx-macros-core v0.8.6 target="sqlx_macros_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-macros-core v0.8.6/Build/TargetInner { name_inferred: true, ..: lib_target("sqlx_macros_core", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.8.6/src/lib.rs", Edition2021) }
-   7.538224455s  INFO prepare_target{force=false package_id=sqlx-macros-core v0.8.6 target="sqlx_macros_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-macros-core-2f4eef514fd161fe/lib-sqlx_macros_core`
+   8.544203969s  INFO prepare_target{force=false package_id=sqlx-macros-core v0.8.6 target="sqlx_macros_core"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-macros-core v0.8.6/Build/TargetInner { name_inferred: true, ..: lib_target("sqlx_macros_core", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-macros-core-0.8.6/src/lib.rs", Edition2021) }
+   8.563882934s  INFO prepare_target{force=false package_id=sqlx-macros-core v0.8.6 target="sqlx_macros_core"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-macros-core-2f4eef514fd161fe/lib-sqlx_macros_core`
 
 Caused by:
     No such file or directory (os error 2)
@@ -703,8 +703,8 @@ Stack backtrace:
   27: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   28: <unknown>
-   7.551191028s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-postgres v0.8.6/Build/TargetInner { name_inferred: true, ..: lib_target("sqlx_postgres", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-postgres-0.8.6/src/lib.rs", Edition2021) }
-   7.551252334s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-postgres-bcd7eb59326aa549/lib-sqlx_postgres`
+   8.593167194s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-postgres v0.8.6/Build/TargetInner { name_inferred: true, ..: lib_target("sqlx_postgres", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-postgres-0.8.6/src/lib.rs", Edition2021) }
+   8.613388961s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-postgres-bcd7eb59326aa549/lib-sqlx_postgres`
 
 Caused by:
     No such file or directory (os error 2)
@@ -750,8 +750,8 @@ Stack backtrace:
   28: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   29: <unknown>
-   7.581290998s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-postgres v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx_postgres", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-postgres-0.8.6/src/lib.rs", Edition2021) }
-   7.581352013s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-postgres-511f52b5c3e777be/lib-sqlx_postgres`
+   8.721299895s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint: fingerprint error for sqlx-postgres v0.8.6/Check { test: false }/TargetInner { name_inferred: true, ..: lib_target("sqlx_postgres", ["lib"], "/home/Shamil/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/sqlx-postgres-0.8.6/src/lib.rs", Edition2021) }
+   8.721570142s  INFO prepare_target{force=false package_id=sqlx-postgres v0.8.6 target="sqlx_postgres"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/sqlx-postgres-511f52b5c3e777be/lib-sqlx_postgres`
 
 Caused by:
     No such file or directory (os error 2)
@@ -795,8 +795,8 @@ Stack backtrace:
   26: __libc_start_main
              at /build/glibc-B3wQXB/glibc-2.31/csu/../csu/libc-start.c:308:16
   27: <unknown>
-   7.684267451s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint: fingerprint error for yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil)/Check { test: true }/TargetInner { name: "yrion_backend", doc: true, ..: with_path("/home/Shamil/nerax_yrion/bakend_profil/src/main.rs", Edition2021) }
-   7.684454506s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/yrion_backend-a5a4861dc39f26d5/test-bin-yrion_backend`
+   8.921730750s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint: fingerprint error for yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil)/Check { test: true }/TargetInner { name: "yrion_backend", doc: true, ..: with_path("/home/Shamil/nerax_yrion/bakend_profil/src/main.rs", Edition2021) }
+   8.933354547s  INFO prepare_target{force=false package_id=yrion_backend v1.0.0 (/home/Shamil/nerax_yrion/bakend_profil) target="yrion_backend"}: cargo::core::compiler::fingerprint:     err: failed to read `/home/Shamil/nerax_yrion/bakend_profil/target/debug/.fingerprint/yrion_backend-a5a4861dc39f26d5/test-bin-yrion_backend`
 
 Caused by:
     No such file or directory (os error 2)

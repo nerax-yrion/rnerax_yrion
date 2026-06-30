@@ -25,4 +25,4 @@ final List<Map<String, String>> africaLanguages = [
   {"code": "ff", "nom": "Fulfulde (Peul)"}, // 🇬🇳
 ];
 
-// mise a jour de se liste niveau 1 
+// mise a jour de se liste de lange africain niveau 1 

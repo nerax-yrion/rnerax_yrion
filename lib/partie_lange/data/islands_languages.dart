@@ -14,3 +14,5 @@ final List<Map<String, String>> islandsLanguages = [
   {"code": "haw", "nom": "Ōlelo Hawaiʻi"}, // 🇺🇸 (Hawaii)
   {"code": "dv", "nom": "ދިވެހިބަސް (Maldivien)"}, // 🇲🇻
 ];
+
+ // la liste des langue dans les ile niveau 1

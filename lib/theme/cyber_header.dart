@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nerax_yrion/theme/yrion_theme.dart'; // 👈 On importe ton fichier thème ici !
 
 class CyberTitleConnexion extends StatelessWidget {
   const CyberTitleConnexion({super.key});
@@ -7,21 +8,21 @@ class CyberTitleConnexion extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShaderMask(
       blendMode: BlendMode.srcIn,
-      // 🎨 Configuration du dégradé ajusté (Cyan -> Bleu Électrique -> Rose Magenta)
+      // 🎨 Plus aucun code couleur en dur ici, on utilise ton catalogue !
       shaderCallback: (bounds) => const LinearGradient(
         begin: Alignment.centerLeft,
         end: Alignment.centerRight,
         colors: [
-          Color(0xFF00B4DB), // Cyan lumineux (début de "connexion")
-          Color(0xFF5B62E6), // Bleu-violet de transition
-          Color(0xFFD946EF), // Rose / Magenta vif (fin de "connexion")
+          YrionTheme.cyanNeon,    // 👈 Utilise ton Cyan officiel
+          YrionTheme.borderNeon,  // 👈 Utilise ton Bleu/Violet de transition
+          YrionTheme.magentaNeon, // 👈 Utilise ton Rose Magenta officiel
         ],
       ).createShader(bounds),
       child: const Text(
         'connexion',
         style: TextStyle(
           fontFamily: 'AlexBrush', 
-          fontSize: 52, // Un poil plus grand pour bien apprécier le dégradé
+          fontSize: 52, 
           fontWeight: FontWeight.w400,
         ),
       ),

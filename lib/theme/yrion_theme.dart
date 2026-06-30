@@ -14,3 +14,6 @@ class YrionTheme {
   static const Color textMuted = Color(0xFF5D598C);       // Pour la distance, le temps écoulé, les sous-titres
   static const Color textLight = Color(0xFFBCBABE);       // Pour le corps du texte des messages
 }
+
+
+// ce fichier est le cataloge de couleur de yo
