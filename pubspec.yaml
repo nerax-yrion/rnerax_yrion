@@ -28,6 +28,9 @@ dependencies:
   record: ^6.0.0
   path_provider: ^2.1.6
   connectivity_plus: ^7.1.1
+  
+  # 🧠 GESTIONNAIRE D'ÉTAT : Requis pour le Timer Éco-Élite de ton fond d'écran
+  provider: ^6.1.5+1
 
 dev_dependencies:
   flutter_test:

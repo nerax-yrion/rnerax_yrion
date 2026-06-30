@@ -1,12 +1,15 @@
+// lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // 📦 AJOUT : Pour distribuer le temps partout
 
 // 🎯 IMPORTATIONS DE TES DOSSIERS DE DESIGN
 import 'package:nerax_yrion/partie connexion et inscription/connexion/connexion.dart';
 import 'package:nerax_yrion/partie connexion et inscription/inscription/inscription.dart';
 import 'package:nerax_yrion/iconne_de_navigation/navigation.dart';
 
-// 📡 LE CERVEAU RÉSEAU SPATIAL
+// 📡 LE CERVEAU RÉSEAU ET DU TIMER DE FOND D'YRION
 import 'chat/panne_connexion/gestionnaire_signal_spatial.dart';
+import 'theme/timer_de_fond/gestionnaire_temps_complet.dart'; // ⏱️ AJOUT : Ton timer éco-élite
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,7 +17,13 @@ void main() {
   // 🛸 INITIALISATION : On allume le scanner de réseau spatial YO !
   GestionnaireSignalSpatial().initialiserSurveillance();
   
-  runApp(const YrionApp());
+  runApp(
+    // 🧠 On injecte le GestionnaireTemps au sommet absolu de l'APK
+    ChangeNotifierProvider(
+      create: (context) => GestionnaireTemps(),
+      child: const YrionApp(),
+    ),
+  );
 }
 
 class YrionApp extends StatelessWidget {
