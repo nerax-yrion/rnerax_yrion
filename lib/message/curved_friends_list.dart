@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import 'chat_user_model.dart';
-import 'chat_room_page.dart';
+import '../chat/chat_room_page.dart';
 
 class CurvedFriendsList extends StatefulWidget {
   final List<ChatUser> amis;

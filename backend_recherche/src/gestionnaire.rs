@@ -66,7 +66,7 @@ async fn traiter_flux_recherche_securise(socket: WebSocket, etat: EtatRechercheP
                         // Même si l'utilisateur tape à une vitesse folle, Neon résout la requête floue
                         // en parallèle sans jamais ralentir le reste de l'application Flutter.
                         tokio::spawn(async move {
-                            moteur_recherche::executer_filtrage_quantique(requete, &pool_clone, &tx_clone).await;
+                            moteur_recherche::executer_filtrage_quantique(requete, &pool_clone, &tx_clone).await; 
                         });
                     }
 

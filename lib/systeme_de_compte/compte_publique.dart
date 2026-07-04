@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:nerax_yrion/theme/yrion_theme.dart';
 import '../message/chat_user_model.dart';
-import '../message/chat_room_page.dart';
+import '../chat/chat_room_page.dart';
 import '../../profil/profil_data.dart'; // Double-remontée (../..) pour atteindre le dossier profil
 
 class ComptePrive {

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:nerax_yrion/theme/yrion_theme.dart';
-import 'chat_user_model.dart';
+import '../message/chat_user_model.dart';
 import 'chat_service.dart';
 import '../profil/profil_data.dart';
 

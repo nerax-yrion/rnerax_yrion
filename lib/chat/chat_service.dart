@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'chat_user_model.dart';
+import '../message/chat_user_model.dart';
 import '../profil/profil_data.dart'; // Importation de ton fichier profil local
 
 class ChatService {
